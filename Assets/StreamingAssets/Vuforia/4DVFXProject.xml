@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="PtcMaker20cm" size="0.200000 0.231250" />
+    <ImageTarget name="PtcMaker_RealSize" size="1.000000 1.156250" />
+    <ImageTarget name="PtcMaker3" size="3.000000 3.468750" />
+  </Tracking>
+</QCARConfig>

@@ -1,0 +1,188 @@
+fileFormatVersion: 2
+guid: 9ec4d03dfbfe77b4d89ca648c8d946e1
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Arm
+    100002: ArmUI
+    100004: ArmUI_ButtonPosition1
+    100006: ArmUI_ButtonPosition2
+    100008: ArmUI_ButtonPosition3
+    100010: ArmUI_ButtonPosition4
+    100012: ArmUI_ButtonPosition5
+    100014: ArmUI_ButtonPosition6
+    100016: ArmUI_SystemButtonPosition1
+    100018: ArmUI_SystemButtonPosition2
+    100020: HandWing
+    100022: HandWing_App1
+    100024: HandWing_App2
+    100026: HandWing_App3
+    100028: HandWing_App4
+    100030: HandWing_App5
+    100032: HandWing_App6
+    100034: HandWing_App7
+    100036: HandWingUpper
+    100038: HandWingUpper_App1
+    100040: HandWingUpper_App2
+    100042: HandWingUpper_App3
+    100044: HandWingUpper_App4
+    100046: HandWingUpper_App5
+    100048: HandWingUpper_App6
+    100050: PalmUI
+    100052: PalmUI__ButtonPosition1
+    100054: PalmUI__ButtonPosition2
+    100056: PalmUI__ButtonPosition3
+    100058: PalmUI__ButtonPosition4
+    100060: PalmUI__ButtonPosition5
+    100062: RightHand
+    100064: ThumbUI
+    100066: ThumbUI_Button
+    100068: //RootNode
+    400000: Arm
+    400002: ArmUI
+    400004: ArmUI_ButtonPosition1
+    400006: ArmUI_ButtonPosition2
+    400008: ArmUI_ButtonPosition3
+    400010: ArmUI_ButtonPosition4
+    400012: ArmUI_ButtonPosition5
+    400014: ArmUI_ButtonPosition6
+    400016: ArmUI_SystemButtonPosition1
+    400018: ArmUI_SystemButtonPosition2
+    400020: HandWing
+    400022: HandWing_App1
+    400024: HandWing_App2
+    400026: HandWing_App3
+    400028: HandWing_App4
+    400030: HandWing_App5
+    400032: HandWing_App6
+    400034: HandWing_App7
+    400036: HandWingUpper
+    400038: HandWingUpper_App1
+    400040: HandWingUpper_App2
+    400042: HandWingUpper_App3
+    400044: HandWingUpper_App4
+    400046: HandWingUpper_App5
+    400048: HandWingUpper_App6
+    400050: PalmUI
+    400052: PalmUI__ButtonPosition1
+    400054: PalmUI__ButtonPosition2
+    400056: PalmUI__ButtonPosition3
+    400058: PalmUI__ButtonPosition4
+    400060: PalmUI__ButtonPosition5
+    400062: RightHand
+    400064: ThumbUI
+    400066: ThumbUI_Button
+    400068: //RootNode
+    2100000: No Name
+    2100002: Material_52.003
+    2300000: Arm
+    2300002: ArmUI
+    2300004: HandWing
+    2300006: HandWingUpper
+    2300008: PalmUI
+    2300010: RightHand
+    2300012: ThumbUI
+    2300014: ThumbUI_Button
+    3300000: Arm
+    3300002: ArmUI
+    3300004: HandWing
+    3300006: HandWingUpper
+    3300008: PalmUI
+    3300010: RightHand
+    3300012: ThumbUI
+    3300014: ThumbUI_Button
+    4300000: HandWing
+    4300002: HandWingUpper
+    4300004: PalmUI
+    4300006: ThumbUI
+    4300008: ThumbUI_Button
+    4300010: ArmUI
+    4300012: Arm
+    4300014: RightHand
+    9500000: //RootNode
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
