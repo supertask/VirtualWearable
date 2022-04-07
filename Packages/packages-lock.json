@@ -255,6 +255,13 @@
       },
       "url": "https://registry.npmjs.com"
     },
+    "jp.supertask.shaderlibcore": {
+      "version": "https://github.com/supertask/ShaderLibCore.git?path=/Packages/jp.supertask.shaderlibcore",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "893853a2531b2c386c42f6cbc3b3ddf8ff78616e"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

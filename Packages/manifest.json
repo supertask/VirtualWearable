@@ -16,6 +16,7 @@
     }
   ],
   "dependencies": {
+    "jp.supertask.shaderlibcore": "https://github.com/supertask/ShaderLibCore.git?path=/Packages/jp.supertask.shaderlibcore",
     "jp.keijiro.klak.motion": "1.0.2",
     "com.ptc.vuforia.engine": "file:com.ptc.vuforia.engine-10.3.2.tgz",
     "com.ultraleap.tracking": "5.2.0",
