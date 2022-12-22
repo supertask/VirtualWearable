@@ -17,7 +17,7 @@ namespace VW
 
         private GameObject arm, armUI, armRingUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
-        private GameObject palmUIIcons, firstAppIcons, secondAppIcons;
+        private GameObject armIcons, palmIcons, firstAppIcons, secondAppIcons;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
@@ -42,7 +42,8 @@ namespace VW
             this.palmUI = this.vwUI.transform.Find("PalmUI").gameObject;
             this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
             this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
-            this.palmUIIcons = this.icons.transform.Find("PalmUIIcons").gameObject;
+            this.armIcons = this.icons.transform.Find("ArmIcons").gameObject;
+            this.palmIcons = this.icons.transform.Find("PalmIcons").gameObject;
             this.firstAppIcons = this.icons.transform.Find("FirstAppIcons").gameObject;
             this.secondAppIcons = this.icons.transform.Find("SecondAppIcons").gameObject;
 
@@ -62,7 +63,8 @@ namespace VW
 
             this.MoveChildren(this.firstAppIcons, this.firstHandWingUI);
             this.MoveChildren(this.secondAppIcons, this.secondHandWingUI);
-            this.MoveChildren(this.palmUIIcons, this.palmUI);
+            this.MoveChildren(this.palmIcons, this.palmUI);
+            this.MoveChildren(this.armIcons, this.armUI);
 
             /*
             Debug.Log("d2");
@@ -92,10 +94,12 @@ namespace VW
 
                 s.localRotation = Quaternion.Euler(0, 0, 0);
 
+                /*
                 Debug.Log("Name: " + sourceParent.gameObject.name);
                 Debug.Log("Child Name: " + s.gameObject.name);
                 Debug.Log("localPosition: " + s.localPosition);
                 Debug.Log("localRotation: " + s.localRotation);
+                */
             }
         }
 
@@ -134,10 +138,10 @@ namespace VW
 
             /*
             // Icons
-            for (int i = 0; i < this.palmUIIcons.gameObject.transform.childCount; i++)
+            for (int i = 0; i < this.palmIcons.gameObject.transform.childCount; i++)
             {
-                this.palmUIIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
-                this.palmUIIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+                this.palmIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
+                this.palmIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
             }
             for (int i = 0; i < this.firstAppIcons.gameObject.transform.childCount; i++)
             {
