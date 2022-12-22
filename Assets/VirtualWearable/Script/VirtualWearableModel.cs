@@ -90,12 +90,12 @@ namespace VW
                 s.localPosition = Vector3.zero;
                 //s.localRotation = Quaternion.AngleAxis(270, Vector3.left);
 
-                //s.localRotation = Quaternion.Euler(0, 0, 0);
+                s.localRotation = Quaternion.Euler(0, 0, 0);
 
-                /*
                 Debug.Log("Name: " + sourceParent.gameObject.name);
                 Debug.Log("Child Name: " + s.gameObject.name);
-                Debug.Log("Rotation1: " + s.localRotation);*/
+                Debug.Log("localPosition: " + s.localPosition);
+                Debug.Log("localRotation: " + s.localRotation);
             }
         }
 
