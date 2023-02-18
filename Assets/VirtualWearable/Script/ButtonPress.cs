@@ -36,8 +36,8 @@ public class ButtonPress : MonoBehaviour
     void Start()
     {
         // Remember start position of button
-        this.buttonTop = this.transform.Find(this.name + "Top").gameObject;
-        this.buttonBottom = this.transform.Find(this.name + "Bottom").gameObject;
+        this.buttonTop = this.transform.Find("Top").gameObject;
+        this.buttonBottom = this.transform.Find("Bottom").gameObject;
         this.startLocalPosition = this.buttonTop.transform.localPosition;
         Vector3 diffWithBottom = this.buttonTop.transform.localPosition - this.buttonBottom.transform.localPosition;
         this.activationDistance = Math.Abs(diffWithBottom.y);

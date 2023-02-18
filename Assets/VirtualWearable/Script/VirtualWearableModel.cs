@@ -17,7 +17,7 @@ namespace VW
 
         private GameObject arm, armUI, armRingUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
-        private GameObject armIcons, palmIcons, firstAppIcons, secondAppIcons;
+        private GameObject armIcons, palmIcons, firstAppIcons, secondAppIcons, iconOcclusions;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
@@ -46,6 +46,7 @@ namespace VW
             this.palmIcons = this.icons.transform.Find("PalmIcons").gameObject;
             this.firstAppIcons = this.icons.transform.Find("FirstAppIcons").gameObject;
             this.secondAppIcons = this.icons.transform.Find("SecondAppIcons").gameObject;
+            this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
             //Disable mesh
             Util.EnableMeshRendererRecursively(this.firstAppIcons, false);
@@ -61,10 +62,10 @@ namespace VW
             }
             */
 
-            this.MoveChildren(this.firstAppIcons, this.firstHandWingUI);
-            this.MoveChildren(this.secondAppIcons, this.secondHandWingUI);
-            this.MoveChildren(this.palmIcons, this.palmUI);
-            this.MoveChildren(this.armIcons, this.armUI);
+            //this.MoveChildren(this.firstAppIcons, this.firstHandWingUI, this.iconOcclusions);
+            //this.MoveChildren(this.secondAppIcons, this.secondHandWingUI, this.iconOcclusions);
+            this.MoveChildren(this.palmIcons, this.palmUI, this.iconOcclusions);
+            this.MoveChildren(this.armIcons, this.armUI, this.iconOcclusions);
 
             /*
             Debug.Log("d2");
@@ -81,18 +82,21 @@ namespace VW
             this.isVisibleVirtualWearable = false;
         }
 
-        private void MoveChildren(GameObject sourceParent, GameObject targetParent)
+        private void MoveChildren(GameObject sourceParent, GameObject targetParent, GameObject occlutionParent)
         {
             //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
             for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
             {
-                Transform s = sourceParent.transform.GetChild(i);
-                Transform t = targetParent.transform.GetChild(i);
-                s.parent = t;
-                s.localPosition = Vector3.zero;
-                //s.localRotation = Quaternion.AngleAxis(270, Vector3.left);
+                Transform source = sourceParent.transform.GetChild(i);
+                Transform target = targetParent.transform.GetChild(i);
+                source.parent = target;
+                source.localPosition = Vector3.zero;
+                source.localRotation = Quaternion.Euler(0, 0, 0);
 
-                s.localRotation = Quaternion.Euler(0, 0, 0);
+                GameObject occulutionGO = InstantiateRandomOcclutionGO(occlutionParent);
+                occulutionGO.transform.parent = target;
+                occulutionGO.transform.localPosition = Vector3.zero;
+                occulutionGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
                 /*
                 Debug.Log("Name: " + sourceParent.gameObject.name);
@@ -101,6 +105,13 @@ namespace VW
                 Debug.Log("localRotation: " + s.localRotation);
                 */
             }
+        }
+
+        public GameObject InstantiateRandomOcclutionGO(GameObject occlutionParent)
+        {
+            int index = Random.Range(0, occlutionParent.transform.childCount);
+            GameObject occlutionObj = Instantiate(occlutionParent.transform.GetChild(index).gameObject);
+            return occlutionObj;
         }
 
         public void AdjustVirtualWearable(Hand hand)
