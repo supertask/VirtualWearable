@@ -302,7 +302,7 @@
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.Rendering.HighDefinition.ShaderGraph.HDUnlitData",
     "m_ObjectId": "28fc8992e8744fe5bbd6dccd622c2c99",
-    "m_EnableShadowMatte": true,
+    "m_EnableShadowMatte": false,
     "m_DistortionOnly": false
 }
 

@@ -64,8 +64,10 @@ namespace VW
 
             //this.MoveChildren(this.firstAppIcons, this.firstHandWingUI, this.iconOcclusions);
             //this.MoveChildren(this.secondAppIcons, this.secondHandWingUI, this.iconOcclusions);
-            this.MoveChildren(this.palmIcons, this.palmUI, this.iconOcclusions);
-            this.MoveChildren(this.armIcons, this.armUI, this.iconOcclusions);
+            this.MoveIconsIntoUI(this.palmIcons, this.palmUI, new Vector3(0f, 0.00175f, 0f), Quaternion.Euler(0, 0, 0));
+            this.MoveIconsIntoUI(this.armIcons, this.armUI, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f));
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUI, new Vector3(0f, -0.002f, 0f));
 
             /*
             Debug.Log("d2");
@@ -82,7 +84,7 @@ namespace VW
             this.isVisibleVirtualWearable = false;
         }
 
-        private void MoveChildren(GameObject sourceParent, GameObject targetParent, GameObject occlutionParent)
+        private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent, Vector3 localPosition, Quaternion localRotation)
         {
             //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
             for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
@@ -90,20 +92,27 @@ namespace VW
                 Transform source = sourceParent.transform.GetChild(i);
                 Transform target = targetParent.transform.GetChild(i);
                 source.parent = target;
-                source.localPosition = Vector3.zero;
-                source.localRotation = Quaternion.Euler(0, 0, 0);
+                source.localPosition = localPosition;
+                source.localRotation = localRotation;
 
+                //GameObject occulutionGO = InstantiateRandomOcclutionGO(occlutionParent);
+                //occulutionGO.transform.parent = target;
+                //occulutionGO.transform.localPosition = Vector3.zero;
+                //occulutionGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            }
+        }
+
+        private void MoveOcculutionsIntoUI(GameObject occlutionParent, GameObject targetParent,
+               Vector3 localPosition)
+        {
+            //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
+            for (int i = targetParent.gameObject.transform.childCount - 1; i >= 0; i--)
+            {
                 GameObject occulutionGO = InstantiateRandomOcclutionGO(occlutionParent);
+                Transform target = targetParent.transform.GetChild(i);
                 occulutionGO.transform.parent = target;
-                occulutionGO.transform.localPosition = Vector3.zero;
+                occulutionGO.transform.localPosition = localPosition;
                 occulutionGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
-
-                /*
-                Debug.Log("Name: " + sourceParent.gameObject.name);
-                Debug.Log("Child Name: " + s.gameObject.name);
-                Debug.Log("localPosition: " + s.localPosition);
-                Debug.Log("localRotation: " + s.localRotation);
-                */
             }
         }
 
