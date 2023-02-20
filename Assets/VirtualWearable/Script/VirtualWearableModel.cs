@@ -15,9 +15,10 @@ namespace VW
         public GameObject icons;
         //public GameObject particleExplosionVFX;
 
-        private GameObject arm, armUI, armRingUI;
+        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
-        private GameObject armIcons, palmIcons, firstAppIcons, secondAppIcons, iconOcclusions;
+        private GameObject armGeneralIcons, armSystemIcons, armClock;
+        private GameObject palmIcons, firstAppIcons, secondAppIcons, iconOcclusions;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
@@ -37,12 +38,17 @@ namespace VW
         {
             this.arm = this.vwUI.transform.Find("Arm").gameObject;
             this.armUI = this.vwUI.transform.Find("ArmUI").gameObject;
+            this.armUIGeneral = this.armUI.transform.Find("ArmUI_General").gameObject;
+            this.armUISystem = this.armUI.transform.Find("ArmUI_System").gameObject;
+            this.armUIClock = this.armUI.transform.Find("ArmUI_Clock").gameObject;
+
             this.armRingUI = this.vwUI.transform.Find("ArmRingUI").gameObject;
 
             this.palmUI = this.vwUI.transform.Find("PalmUI").gameObject;
             this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
             this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
-            this.armIcons = this.icons.transform.Find("ArmIcons").gameObject;
+            this.armGeneralIcons = this.icons.transform.Find("ArmUI_GeneralIcons").gameObject;
+            this.armSystemIcons = this.icons.transform.Find("ArmUI_SystemIcons").gameObject;
             this.palmIcons = this.icons.transform.Find("PalmIcons").gameObject;
             this.firstAppIcons = this.icons.transform.Find("FirstAppIcons").gameObject;
             this.secondAppIcons = this.icons.transform.Find("SecondAppIcons").gameObject;
@@ -65,9 +71,11 @@ namespace VW
             //this.MoveChildren(this.firstAppIcons, this.firstHandWingUI, this.iconOcclusions);
             //this.MoveChildren(this.secondAppIcons, this.secondHandWingUI, this.iconOcclusions);
             this.MoveIconsIntoUI(this.palmIcons, this.palmUI, new Vector3(0f, 0.00175f, 0f), Quaternion.Euler(0, 0, 0));
-            this.MoveIconsIntoUI(this.armIcons, this.armUI, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
+            this.MoveIconsIntoUI(this.armGeneralIcons, this.armUIGeneral, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
+            this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f));
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUI, new Vector3(0f, -0.002f, 0f));
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f));
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f));
 
             /*
             Debug.Log("d2");
@@ -140,9 +148,9 @@ namespace VW
                 Quaternion.AngleAxis(180, Vector3.up);
 
             // Arm position, rotation, and scale
-            this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(180, Vector3.left);
-            this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(180, Vector3.left);
-            this.armRingUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(180, Vector3.left);
+            this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
+            this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
+            this.armRingUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
             /*
             this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
             this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
