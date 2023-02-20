@@ -17,13 +17,14 @@ namespace VW
 
         private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
-        private GameObject armGeneralIcons, armSystemIcons, armClock;
+        private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
         private GameObject palmIcons, firstAppIcons, secondAppIcons, iconOcclusions;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
         public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
         public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
+        public readonly Vector3 DEFAULT_OCCLUTION_SCALE = new Vector3(1, 0.15f, 1);
 
         private HandUtil handUtil;
         public HandUtil handUtilAccess {
@@ -49,6 +50,7 @@ namespace VW
             this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
             this.armGeneralIcons = this.icons.transform.Find("ArmUI_GeneralIcons").gameObject;
             this.armSystemIcons = this.icons.transform.Find("ArmUI_SystemIcons").gameObject;
+            this.armClockIcons = this.icons.transform.Find("ArmUI_ClockIcons").gameObject;
             this.palmIcons = this.icons.transform.Find("PalmIcons").gameObject;
             this.firstAppIcons = this.icons.transform.Find("FirstAppIcons").gameObject;
             this.secondAppIcons = this.icons.transform.Find("SecondAppIcons").gameObject;
@@ -73,9 +75,11 @@ namespace VW
             this.MoveIconsIntoUI(this.palmIcons, this.palmUI, new Vector3(0f, 0.00175f, 0f), Quaternion.Euler(0, 0, 0));
             this.MoveIconsIntoUI(this.armGeneralIcons, this.armUIGeneral, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
             this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f));
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f));
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f));
+            this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0) );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(1, 0.15f, 2.5f) );
 
             /*
             Debug.Log("d2");
@@ -111,7 +115,7 @@ namespace VW
         }
 
         private void MoveOcculutionsIntoUI(GameObject occlutionParent, GameObject targetParent,
-               Vector3 localPosition)
+               Vector3 localPosition, Vector3 localScale)
         {
             //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
             for (int i = targetParent.gameObject.transform.childCount - 1; i >= 0; i--)
@@ -121,6 +125,7 @@ namespace VW
                 occulutionGO.transform.parent = target;
                 occulutionGO.transform.localPosition = localPosition;
                 occulutionGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                occulutionGO.transform.localScale = localScale;
             }
         }
 
