@@ -16,6 +16,7 @@
     }
   ],
   "dependencies": {
+    "jp.setchi.fancyscrollview": "https://github.com/setchi/FancyScrollView.git#upm",
     "com.ptc.vuforia.engine": "file:com.ptc.vuforia.engine-10.3.2.tgz",
     "com.ultraleap.tracking": "5.2.0",
     "com.unity.collab-proxy": "1.17.2",
