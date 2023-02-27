@@ -13,18 +13,22 @@ namespace VW
     {
         public GameObject vwUI; //Virtual Wearable UI
         public GameObject icons;
+        public GameObject rightHand;
         //public GameObject particleExplosionVFX;
 
         private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
         private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
-        private GameObject palmIcons, firstAppIcons, secondAppIcons, iconOcclusions;
+        private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
+        private GameObject[] rightFingers;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
         public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
         public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
         public readonly Vector3 DEFAULT_OCCLUTION_SCALE = new Vector3(1, 0.15f, 1);
+        public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 4;
+        public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" }; 
 
         private HandUtil handUtil;
         public HandUtil handUtilAccess {
@@ -35,7 +39,7 @@ namespace VW
         private bool isVisibleVirtualWearable;
         public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
 
-        public void Start()
+        void Awake()
         {
             this.arm = this.vwUI.transform.Find("Arm").gameObject;
             this.armUI = this.vwUI.transform.Find("ArmUI").gameObject;
@@ -44,16 +48,22 @@ namespace VW
             this.armUIClock = this.armUI.transform.Find("ArmUI_Clock").gameObject;
 
             this.armRingUI = this.vwUI.transform.Find("ArmRingUI").gameObject;
-
             this.palmUI = this.vwUI.transform.Find("PalmUI").gameObject;
             this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
             this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
+
+            this.rightFingers = GameObject.FindGameObjectsWithTag("RightFingers");
+            //Debug.Log("finger: " + fingers);
+            //Debug.Log("finger: " + fingers.Length);
+            //Debug.Log("finger: " + fingers[0]);
+
             this.armGeneralIcons = this.icons.transform.Find("ArmUI_GeneralIcons").gameObject;
             this.armSystemIcons = this.icons.transform.Find("ArmUI_SystemIcons").gameObject;
             this.armClockIcons = this.icons.transform.Find("ArmUI_ClockIcons").gameObject;
             this.palmIcons = this.icons.transform.Find("PalmIcons").gameObject;
             this.firstAppIcons = this.icons.transform.Find("FirstAppIcons").gameObject;
             this.secondAppIcons = this.icons.transform.Find("SecondAppIcons").gameObject;
+            this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
             //Disable mesh
@@ -68,6 +78,8 @@ namespace VW
             this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
             this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0) );
             //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            this.MoveIconsOntoHandFingers(this.appIconsOnRightHand, rightFingers, new Vector3(0f, 0.00001f, 0f), Quaternion.Euler(-60, 90, 0), APP_SCALE_ON_FINGERS);
+
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(1, 0.15f, 2.5f) );
@@ -76,6 +88,24 @@ namespace VW
             Debug.Log("handUtil: " + handUtil);
 
             this.isVisibleVirtualWearable = false;
+        }
+
+        private void MoveIconsOntoHandFingers(GameObject sourceParent, GameObject[] targetObjs,
+            Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
+        {
+            //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
+            //foreach (GameObject target in targetObjs)
+            for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
+            {
+                Transform source = sourceParent.transform.GetChild(i);
+                Transform target = targetObjs[i].transform;
+                if (i >= targetObjs.Length) { break; }
+
+                source.parent = target;
+                source.localScale = localScale;
+                source.localPosition = localPosition;
+                source.localRotation = localRotation;
+            }
         }
 
         private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent, Vector3 localPosition, Quaternion localRotation)
@@ -88,11 +118,6 @@ namespace VW
                 source.parent = target;
                 source.localPosition = localPosition;
                 source.localRotation = localRotation;
-
-                //GameObject occulutionGO = InstantiateRandomOcclutionGO(occlutionParent);
-                //occulutionGO.transform.parent = target;
-                //occulutionGO.transform.localPosition = Vector3.zero;
-                //occulutionGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
         }
 
