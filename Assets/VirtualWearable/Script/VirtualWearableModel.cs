@@ -9,6 +9,39 @@ using static Leap.Finger;
 
 namespace VW
 {
+    public class Ellipsoid
+    {
+        public Vector3 center;
+        public Vector3 radius;
+        public float angle; //0 to 360 degree
+        public float partitionedNum;
+
+        public Ellipsoid(Vector3 center, Vector3 radius, float angle, int partitionedNum)
+        {
+            this.center = center;
+            this.radius = radius;
+            this.angle = angle;
+            this.partitionedNum = partitionedNum;
+        }
+
+        //partitionedNum: 分割数
+        public Vector3 PositionOnSphere(int index, float height)
+        {
+            // 角度を計算する
+            float partitionedAngle = angle / partitionedNum;
+            float offsetAngle = 90f - angle / 2f;
+            float radian = (offsetAngle + index * partitionedAngle) * Mathf.Deg2Rad;
+
+            // 楕円球上の点を計算する
+            Vector3 point = new Vector3(
+                center.x + radius.x * Mathf.Cos(radian),
+                center.y + radius.y * Mathf.Sin(radian),
+                center.z + height + radius.z * Mathf.Sin(radian)
+            );
+            return point;
+        }
+    }
+
     public class VirtualWearableModel: MonoBehaviour
     {
         public GameObject vwUI; //Virtual Wearable UI
@@ -38,6 +71,8 @@ namespace VW
 
         private bool isVisibleVirtualWearable;
         public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
+        private GameObject palmCenter;
+        private GameObject palmLookAtCenter;
 
         void Awake()
         {
@@ -66,6 +101,27 @@ namespace VW
             this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
+            this.palmCenter = new GameObject("palmCenter");
+            this.palmCenter.transform.parent = this.vwUI.transform.parent;
+            this.palmLookAtCenter = new GameObject("palmLookAtCenter");
+            this.palmLookAtCenter.transform.parent = this.palmCenter.transform;
+            this.palmLookAtCenter.transform.position = new Vector3(0, 0.06f, 0);
+            float ellipsoidSize = 0.09f; //meter
+            float ellipsoidHeight = 0.06f; //meter
+            int PARTITIONED_NUM = 5; //app num
+            Ellipsoid ellipsoid = new Ellipsoid(this.palmLookAtCenter.transform.position,
+                new Vector3(ellipsoidSize, ellipsoidSize, ellipsoidHeight),
+                120f, PARTITIONED_NUM);
+            for (int i = 0; i < PARTITIONED_NUM; i++)
+            {
+                var appCenter = new GameObject("appCenter" + i);
+                //TODO: Change position to sphere position later
+                appCenter.transform.position = ellipsoid.PositionOnSphere(i, - ellipsoidHeight / 2.0f);
+                appCenter.transform.LookAt(this.palmLookAtCenter.transform, Vector3.forward);
+                appCenter.transform.parent = this.palmLookAtCenter.transform;
+            }
+
+
             //Disable mesh
             Util.EnableMeshRendererRecursively(this.firstAppIcons, false);
             Util.EnableMeshRendererRecursively(this.secondAppIcons, false);
@@ -74,41 +130,25 @@ namespace VW
             //this.MoveChildren(this.secondAppIcons, this.secondHandWingUI, this.iconOcclusions);
 
             //this.MoveIconsIntoUI(this.palmIcons, this.palmUI, new Vector3(0f, 0.00175f, 0f), Quaternion.Euler(0, 0, 0));
-            this.MoveIconsIntoUI(this.armGeneralIcons, this.armUIGeneral, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
-            this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0) );
-            this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0) );
+            this.MoveIconsIntoUI(this.armGeneralIcons, this.armUIGeneral, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
+            this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
+            this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0), null );
             //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), DEFAULT_OCCLUTION_SCALE );
-            this.MoveIconsOntoHandFingers(this.appIconsOnRightHand, rightFingers, new Vector3(0f, 0.00001f, 0f), Quaternion.Euler(-60, 90, 0), APP_SCALE_ON_FINGERS);
+            this.MoveIconsIntoUI(this.appIconsOnRightHand, this.palmLookAtCenter, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 0, 0), APP_SCALE_ON_FINGERS);
 
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(1, 0.15f, 2.5f) );
 
             this.handUtil = new HandUtil(playerHeadTransform);
-            Debug.Log("handUtil: " + handUtil);
+            //Debug.Log("handUtil: " + handUtil);
 
             this.isVisibleVirtualWearable = false;
         }
 
-        private void MoveIconsOntoHandFingers(GameObject sourceParent, GameObject[] targetObjs,
-            Vector3 localPosition, Quaternion localRotation, Vector3 localScale)
-        {
-            //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
-            //foreach (GameObject target in targetObjs)
-            for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
-            {
-                Transform source = sourceParent.transform.GetChild(i);
-                Transform target = targetObjs[i].transform;
-                if (i >= targetObjs.Length) { break; }
 
-                source.parent = target;
-                source.localScale = localScale;
-                source.localPosition = localPosition;
-                source.localRotation = localRotation;
-            }
-        }
-
-        private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent, Vector3 localPosition, Quaternion localRotation)
+        private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent,
+            Vector3? localPosition, Quaternion? localRotation, Vector3? localScale)
         {
             //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
             for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
@@ -116,8 +156,9 @@ namespace VW
                 Transform source = sourceParent.transform.GetChild(i);
                 Transform target = targetParent.transform.GetChild(i);
                 source.parent = target;
-                source.localPosition = localPosition;
-                source.localRotation = localRotation;
+                if (localScale.HasValue) { source.localScale = localScale.Value; }
+                if (localPosition.HasValue) { source.localPosition = localPosition.Value; }
+                if (localRotation.HasValue) { source.localRotation = localRotation.Value; }
             }
         }
 
@@ -146,6 +187,7 @@ namespace VW
         public void AdjustVirtualWearable(Hand hand)
         {
             Vector3 palmPosition = HandUtil.ToVector3(hand.PalmPosition);
+            Quaternion palmQuaternion = HandUtil.ToQuaternion(hand.Rotation);
             Vector3 directionTowardsIndexFinger = HandUtil.ToVector3(hand.Direction);
             Vector3 handNormal = HandUtil.ToVector3(hand.PalmNormal);
 
@@ -155,7 +197,7 @@ namespace VW
             Vector3 directionTowardsThumb = Vector3.Cross(handNormal, directionTowardsIndexFinger).normalized;
             this.vwUI.transform.position = palmPosition + directionTowardsIndexFinger * HAND_AJUST__TOWARDS_FINGER;
             this.vwUI.transform.position += directionTowardsThumb * HAND_AJUST__TOWARDS_THUMB;
-            this.vwUI.transform.rotation = HandUtil.ToQuaternion(hand.Rotation) *
+            this.vwUI.transform.rotation = palmQuaternion *
                 Quaternion.AngleAxis(180, Vector3.forward) *
                 Quaternion.AngleAxis(180, Vector3.up);
 
@@ -175,6 +217,9 @@ namespace VW
                 1);
             //Debug.Log("width: " + hand.Arm.Width);
             //Debug.Log("length: " + hand.Arm.Length);
+
+            this.palmCenter.transform.position = palmPosition;
+            this.palmCenter.transform.rotation = palmQuaternion * Quaternion.AngleAxis(270, Vector3.left);
 
             /*
             // Icons

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Gmail
+  m_Name: Contact
   m_Shader: {fileID: -6465566751694194690, guid: b83631189089c544299f2ca40f80d898,
     type: 3}
   m_ValidKeywords:
@@ -166,11 +166,11 @@ Material:
     - _DisplacementLockObjectScale: 1
     - _DisplacementLockTilingScale: 1
     - _DisplacementMode: 0
-    - _DissolveCyberAreaWidth: 0.129
-    - _DissolveEdgeWidth: 0.0287
+    - _DissolveCyberAreaWidth: 0.5
+    - _DissolveEdgeWidth: 0.541
     - _DissolveNoiseScale: 20
     - _DissolveScale: 20
-    - _DissolveThreshold: 0.197
+    - _DissolveThreshold: 0
     - _DistortionBlendMode: 0
     - _DistortionBlurBlendMode: 0
     - _DistortionBlurDstBlend: 0
@@ -202,7 +202,7 @@ Material:
     - _FirstEffectSecondLayerDissolveInterpolation: 0.2
     - _FirstLayerDissolveInterpolation: 0
     - _FourthEffect: 0
-    - _FresnelPower: 8
+    - _FresnelPower: 3.5
     - _HdrpVersion: 2
     - _HeightAmplitude: 0.02
     - _HeightCenter: 0.5
@@ -302,8 +302,8 @@ Material:
     - _FresnelColor: {r: 0, g: 0.8525124, b: 1, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
-    - _MainColor: {r: 1, g: 0, b: 0.11931801, a: 1}
-    - _NoiseTilingAndOffset: {r: 0.8, g: 0.82, b: 0, a: 0}
+    - _MainColor: {r: 0.094744615, g: 0.6792453, b: 0, a: 1}
+    - _NoiseTilingAndOffset: {r: 0.8, g: 0.82, b: 0.65, a: 0}
     - _Offset: {r: 3.35, g: 1.92, b: 0, a: 0}
     - _PerlinNoiseScale2D: {r: 10, g: 10, b: 0, a: 0}
     - _SecondEffectHoloColor: {r: 0.1361257, g: 0.6753927, b: 1, a: 0}
