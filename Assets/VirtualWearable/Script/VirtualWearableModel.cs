@@ -145,9 +145,9 @@ namespace VW
 
         public void AdjustVirtualWearable(Hand hand)
         {
-            Vector3 palmPosition = HandUtil.ToVector3(hand.PalmPosition);
-            Vector3 directionTowardsIndexFinger = HandUtil.ToVector3(hand.Direction);
-            Vector3 handNormal = HandUtil.ToVector3(hand.PalmNormal);
+            Vector3 palmPosition = hand.PalmPosition;
+            Vector3 directionTowardsIndexFinger = hand.Direction;
+            Vector3 handNormal = hand.PalmNormal;
 
             // IMPORTANT: A CENTER POSITION OF VIRTURAL WEARABLE UI is A POINT BETWEEN A HAND AND AN ARM.
             // Hand position & rotation
@@ -155,14 +155,14 @@ namespace VW
             Vector3 directionTowardsThumb = Vector3.Cross(handNormal, directionTowardsIndexFinger).normalized;
             this.vwUI.transform.position = palmPosition + directionTowardsIndexFinger * HAND_AJUST__TOWARDS_FINGER;
             this.vwUI.transform.position += directionTowardsThumb * HAND_AJUST__TOWARDS_THUMB;
-            this.vwUI.transform.rotation = HandUtil.ToQuaternion(hand.Rotation) *
+            this.vwUI.transform.rotation = hand.Rotation *
                 Quaternion.AngleAxis(180, Vector3.forward) *
                 Quaternion.AngleAxis(180, Vector3.up);
 
             // Arm position, rotation, and scale
-            this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
-            this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
-            this.armRingUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
+            this.arm.transform.rotation = hand.Arm.Rotation * Quaternion.AngleAxis(270, Vector3.left);
+            this.armUI.transform.rotation = hand.Arm.Rotation * Quaternion.AngleAxis(270, Vector3.left);
+            this.armRingUI.transform.rotation = hand.Arm.Rotation * Quaternion.AngleAxis(270, Vector3.left);
             /*
             this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
             this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);

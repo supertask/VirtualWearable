@@ -36,7 +36,12 @@ public class HandUtil
         this.isOpenedPreviousHands = new bool[2];
         this.isOpenedPreviousHands.Fill(false);
         this.isOpenedPreviousFingers = new bool[2, 6]; //thumb, index, middle, ring, pinky, unknown
-        this.isOpenedPreviousFingers.Fill(false);
+        //this.isOpenedPreviousFingers.Fill(false);
+        for(int i = 0; i < this.isOpenedPreviousFingers.Length; i++) {
+            for (int j = 0; j < this.isOpenedPreviousFingers.Length; j++) {
+                this.isOpenedPreviousFingers[i, j] = false;
+            }
+        }
         this.handIds = new int[2] { HandUtil.LEFT, HandUtil.RIGHT };
         this.playerTransform = playerTransform;
     }
@@ -242,7 +247,7 @@ public class HandUtil
     }
 
     private Vector3 GetHandVelocity(Hand hand) {
-        return this.playerTransform.InverseTransformDirection(HandUtil.ToVector3(hand.PalmVelocity));
+        return this.playerTransform.InverseTransformDirection(hand.PalmVelocity);
     }
 
     public bool IsMoveLeft(Hand hand) {
@@ -262,19 +267,19 @@ public class HandUtil
     }
 
     private bool IsHandStayed(Hand hand) {
-        return hand.PalmVelocity.Magnitude < this.smallestVelocity;
+        return hand.PalmVelocity.magnitude < this.smallestVelocity;
     }
 
-    private bool IsAlmostOppositeDirection(Vector a, Vector b) {
-        return this.IsAlmostOppositeDirection(HandUtil.ToVector3(a), HandUtil.ToVector3(b));
-    }
+    //private bool IsAlmostOppositeDirection(Vector3 a, Vector3 b) {
+    //    return this.IsAlmostOppositeDirection(Vector3(a), HandUtil.ToVector3(b));
+    //}
     private bool IsAlmostOppositeDirection(Vector3 a, Vector3 b) {
         return Vector3.Angle(a, b) > (180.0f - handForwardDegree);
     }
 
-    private bool IsAlmostSameDirection(Vector a, Vector b) {
-        return this.IsAlmostSameDirection(HandUtil.ToVector3(a), HandUtil.ToVector3(b));
-    }
+    //private bool IsAlmostSameDirection(Vector a, Vector b) {
+    //    return this.IsAlmostSameDirection(HandUtil.ToVector3(a), HandUtil.ToVector3(b));
+    //}
     private bool IsAlmostSameDirection(Vector3 a, Vector3 b) {
         return Vector3.Angle(a, b) < handForwardDegree;
     }
@@ -290,7 +295,7 @@ public class HandUtil
     }
 
     private bool IsPalmNormalSameDirectionWith(Hand hand, Vector3 dir) {
-        return this.IsAlmostSameDirection(HandUtil.ToVector3(hand.PalmNormal), dir);
+        return this.IsAlmostSameDirection(hand.PalmNormal, dir);
     }
 
     private bool IsHandMoveForward(Hand hand) {
@@ -318,7 +323,7 @@ public class HandUtil
     public bool IsThrownGesture(Hand hand)
     {
         if (hand != null) {
-            if (this.IsPalmNormalSameDirectionWith (hand, HandUtil.ToVector3 (hand.PalmVelocity))
+            if (this.IsPalmNormalSameDirectionWith (hand, hand.PalmVelocity)
                && !this.IsHandStayed(hand)) {
                 return true;
             }
@@ -345,12 +350,12 @@ public class HandUtil
     }
 
     //Leap Vector to Unity Vector3
-    public static Vector3 ToVector3(Vector v) {
-        return new Vector3(v.x, v.y, v.z);
-    }
+    //public static Vector3 ToVector3(Vector v) {
+    //    return new Vector3(v.x, v.y, v.z);
+    //}
 
     //Leap Quaternion to Unity Quaternion
-    public static Quaternion ToQuaternion(LeapQuaternion q) {
-        return new Quaternion(q.x, q.y, q.z, q.w);
-    }
+    //public static Quaternion ToQuaternion(LeapQuaternion q) {
+    //    return new Quaternion(q.x, q.y, q.z, q.w);
+    //}
 }
