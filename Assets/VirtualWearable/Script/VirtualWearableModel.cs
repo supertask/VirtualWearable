@@ -36,7 +36,7 @@ namespace VW
             Vector3 point = new Vector3(
                 center.x + radius.x * Mathf.Cos(radian),
                 center.y + radius.y * Mathf.Sin(radian),
-                center.z + height + radius.z * Mathf.Sin(radian)
+                center.z + height
             );
             return point;
         }
@@ -47,7 +47,7 @@ namespace VW
         public GameObject vwUI; //Virtual Wearable UI
         public GameObject icons;
         public GameObject rightHand;
-        //public GameObject particleExplosionVFX;
+        public bool isShowGizmo = true;
 
         private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
@@ -61,7 +61,7 @@ namespace VW
         public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
         public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
         public readonly Vector3 DEFAULT_OCCLUTION_SCALE = new Vector3(1, 0.15f, 1);
-        public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 4;
+        public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 3;
         public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" }; 
 
         public Transform playerHeadTransform;
@@ -77,6 +77,10 @@ namespace VW
         public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
         private GameObject palmCenter;
         private GameObject palmLookAtCenter;
+        private Ellipsoid ellipsoid;
+        private List<MeshRenderer> appIconRenderers;
+        //private float cyberCircuitTimeSpeed = 0.075f;
+        private float cyberCircuitTimeSpeed = 0.5f;
 
         void Awake()
         {
@@ -105,26 +109,31 @@ namespace VW
             this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
-            //this.palmCenter = new GameObject("PalmCenter");
-            this.palmCenter = this.vwUI.transform.parent.Find("PalmCenter").gameObject;
+            this.palmCenter = this.vwUI.transform.parent.Find("PalmCenter").gameObject; //raw tracked palm center
             this.palmCenter.transform.parent = this.vwUI.transform.parent;
             this.palmLookAtCenter = new GameObject("palmLookAtCenter");
             this.palmLookAtCenter.transform.parent = this.palmCenter.transform;
-            this.palmLookAtCenter.transform.position = new Vector3(0, 0.06f, 0);
+            this.palmLookAtCenter.transform.position = new Vector3(0, 0f, 0.125f);
             //this.palmLookAtCenter.transform.localScale = Vector3.zero;
             //this.palmLookAtCenter.SetActive(false);
 
-            float ellipsoidSize = 0.06f; //meter
-            float ellipsoidHeight = 0.09f; //meter
+            appIconRenderers = new List<MeshRenderer>();
+            foreach (MeshRenderer renderer in appIconsOnRightHand.GetComponentsInChildren<MeshRenderer>())
+            {
+                this.appIconRenderers.Add(renderer);
+            }
+
+            float ellipsoidSize = 0.065f; //meter
+            float ellipsoidHeight = 0.065f; //meter
             int PARTITIONED_NUM = 5; //app num
-            Ellipsoid ellipsoid = new Ellipsoid(this.palmLookAtCenter.transform.position,
+            this.ellipsoid = new Ellipsoid(this.palmLookAtCenter.transform.position,
                 new Vector3(ellipsoidSize, ellipsoidSize, ellipsoidHeight),
-                120f, PARTITIONED_NUM);
+                140f, PARTITIONED_NUM);
             for (int i = 0; i < PARTITIONED_NUM; i++)
             {
                 var appCenter = new GameObject("appCenter" + i);
                 //TODO: Change position to sphere position later
-                appCenter.transform.position = ellipsoid.PositionOnSphere(i, 0);
+                appCenter.transform.position = ellipsoid.PositionOnSphere(i, -ellipsoidHeight * 0.75f);
                 appCenter.transform.LookAt(this.palmLookAtCenter.transform, Vector3.forward);
                 appCenter.transform.parent = this.palmLookAtCenter.transform;
             }
@@ -160,6 +169,27 @@ namespace VW
             this.palmLookAtCenter.SetActive(false);
         }
 
+
+        private void FixedUpdate()
+        {
+            float cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
+            foreach (MeshRenderer renderer in appIconRenderers)
+            {
+                renderer.sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+                //renderer.sharedMaterial.SetFloat("_CyberCircuitSeed", cyberCircuitTime);
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!isShowGizmo) return;
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.x);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.z);
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireCube(this.palmLookAtCenter.transform.position, 0.03f * Vector3.one);
+        }
 
         private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent,
             Vector3? localPosition, Quaternion? localRotation, Vector3? localScale)
