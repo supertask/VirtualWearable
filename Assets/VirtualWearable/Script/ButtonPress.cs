@@ -9,20 +9,20 @@ public class ButtonPress : MonoBehaviour
     public float pressingSpeed = 0.05f;
     public float returnSpeed = 6.0f;
 
-    public GameObject buttonUp;
-    public GameObject buttonBottom;
+    private GameObject buttonTop;
+    private GameObject buttonBottom;
     private Vector3 buttonBottomScale;
     private float buttonPressingInflation;
     private float buttonPressedInflation;
 
-    public Color inactiveColor;
-    public Color activeColor;
+    //public Color inactiveColor;
+    //public Color activeColor;
 
     private Vector3 startLocalPosition;
     private float activationDistance;
 
     //Trigger fingers
-    public GuidReference handsRig;
+    public GameObject handsRig;
     private Vector3 previousFingerPos;
     private bool isFingersInCollider;
     private List<GameObject> fingerTips;
@@ -36,8 +36,10 @@ public class ButtonPress : MonoBehaviour
     void Start()
     {
         // Remember start position of button
-        this.startLocalPosition = this.buttonUp.transform.localPosition;
-        Vector3 diffWithBottom = this.buttonUp.transform.localPosition - this.buttonBottom.transform.localPosition;
+        this.buttonTop = this.transform.Find("Top").gameObject;
+        this.buttonBottom = this.transform.Find("Bottom").gameObject;
+        this.startLocalPosition = this.buttonTop.transform.localPosition;
+        Vector3 diffWithBottom = this.buttonTop.transform.localPosition - this.buttonBottom.transform.localPosition;
         this.activationDistance = Math.Abs(diffWithBottom.y);
         Debug.Log("activationDistance: " + this.activationDistance);
         Debug.Log("startLocalPosition: " + this.startLocalPosition.y);
@@ -58,7 +60,7 @@ public class ButtonPress : MonoBehaviour
     void Update()
     {
         if (this.isFingersInCollider) { return; }
-        this.buttonUp.transform.localPosition = Vector3.Lerp(this.buttonUp.transform.localPosition, startLocalPosition, Time.deltaTime * returnSpeed);
+        this.buttonTop.transform.localPosition = Vector3.Lerp(this.buttonTop.transform.localPosition, startLocalPosition, Time.deltaTime * returnSpeed);
 
         //float buttonPercent = Util.Remap(distanceWithStartPos, 0, this.activationDistance, 0, 1); //0~this.activationDistance -> 0~1
         //if (buttonBottom) buttonBottom.GetComponent<Renderer>().material.color = Color.Lerp(Color.white, activeColor, buttonPercent);
@@ -80,7 +82,7 @@ public class ButtonPress : MonoBehaviour
         if (! this.isFingersInCollider || this.isPressed) { return; }
 
         //Is pressed?
-        Vector3 diffWithStartPos = this.buttonUp.transform.localPosition - this.startLocalPosition;
+        Vector3 diffWithStartPos = this.buttonTop.transform.localPosition - this.startLocalPosition;
         float distanceWithStartPos =  Math.Abs(diffWithStartPos.y);
         if (distanceWithStartPos < this.activationDistance) {
             this.isPressed = false;
@@ -99,10 +101,10 @@ public class ButtonPress : MonoBehaviour
         Vector3 diffPos = other.gameObject.transform.position - this.previousFingerPos;
         Vector3 localDiffPos = this.transform.InverseTransformPoint(diffPos) * this.pressingSpeed;
 
-        Vector3 newLocalPosition = this.buttonUp.transform.localPosition;
+        Vector3 newLocalPosition = this.buttonTop.transform.localPosition;
         newLocalPosition.y -= localDiffPos.y;
         newLocalPosition.y = Mathf.Clamp(newLocalPosition.y, this.startLocalPosition.y - this.activationDistance, this.startLocalPosition.y);
-        this.buttonUp.transform.localPosition = newLocalPosition;
+        this.buttonTop.transform.localPosition = newLocalPosition;
 
         this.previousFingerPos = other.gameObject.transform.position;
     }

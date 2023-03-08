@@ -9,99 +9,229 @@ using static Leap.Finger;
 
 namespace VW
 {
+    public class Ellipsoid
+    {
+        public Vector3 center;
+        public Vector3 radius;
+        public float angle; //0 to 360 degree
+        public float partitionedNum;
+
+        public Ellipsoid(Vector3 center, Vector3 radius, float angle, int partitionedNum)
+        {
+            this.center = center;
+            this.radius = radius;
+            this.angle = angle;
+            this.partitionedNum = partitionedNum;
+        }
+
+        //partitionedNum: 分割数
+        public Vector3 PositionOnSphere(int index, float height)
+        {
+            // 角度を計算する
+            float partitionedAngle = angle / partitionedNum;
+            float offsetAngle = 90f - angle / 2f;
+            float radian = (offsetAngle + index * partitionedAngle) * Mathf.Deg2Rad;
+
+            // 楕円球上の点を計算する
+            Vector3 point = new Vector3(
+                center.x + radius.x * Mathf.Cos(radian),
+                center.y + radius.y * Mathf.Sin(radian),
+                center.z + height
+            );
+            return point;
+        }
+    }
+
     public class VirtualWearableModel: MonoBehaviour
     {
         public GameObject vwUI; //Virtual Wearable UI
         public GameObject icons;
-        //public GameObject particleExplosionVFX;
+        public GameObject rightHand;
+        public bool isShowGizmo = true;
 
-        private GameObject arm, armUI, armRingUI;
+        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
-        private GameObject palmUIIcons, firstAppIcons, secondAppIcons;
+        private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
+        private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
+        private GameObject[] rightFingers;
+        private HandUtil handUtil;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
         public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
         public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
+        public readonly Vector3 DEFAULT_OCCLUTION_SCALE = new Vector3(1, 0.15f, 1);
+        public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 3;
+        public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" }; 
 
-        private HandUtil handUtil;
+        public Transform playerHeadTransform;
         public HandUtil handUtilAccess {
             get { return handUtil; }
         }
-        public Transform playerHeadTransform;
+        public GameObject PalmLookAtCenter
+        {
+            get { return palmLookAtCenter; }
+        }
 
         private bool isVisibleVirtualWearable;
         public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
+        private GameObject palmCenter;
+        private GameObject palmLookAtCenter;
+        private Ellipsoid ellipsoid;
+        private List<MeshRenderer> appIconRenderers;
+        //private float cyberCircuitTimeSpeed = 0.075f;
+        private float cyberCircuitTimeSpeed = 0.5f;
 
-        public void Start()
+        void Awake()
         {
             this.arm = this.vwUI.transform.Find("Arm").gameObject;
             this.armUI = this.vwUI.transform.Find("ArmUI").gameObject;
-            this.armRingUI = this.vwUI.transform.Find("ArmRingUI").gameObject;
+            this.armUIGeneral = this.armUI.transform.Find("ArmUI_General").gameObject;
+            this.armUISystem = this.armUI.transform.Find("ArmUI_System").gameObject;
+            this.armUIClock = this.armUI.transform.Find("ArmUI_Clock").gameObject;
 
+            this.armRingUI = this.vwUI.transform.Find("ArmRingUI").gameObject;
             this.palmUI = this.vwUI.transform.Find("PalmUI").gameObject;
             this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
             this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
-            this.palmUIIcons = this.icons.transform.Find("PalmUIIcons").gameObject;
+
+            this.rightFingers = GameObject.FindGameObjectsWithTag("RightFingers");
+            //Debug.Log("finger: " + fingers);
+            //Debug.Log("finger: " + fingers.Length);
+            //Debug.Log("finger: " + fingers[0]);
+
+            this.armGeneralIcons = this.icons.transform.Find("ArmUI_GeneralIcons").gameObject;
+            this.armSystemIcons = this.icons.transform.Find("ArmUI_SystemIcons").gameObject;
+            this.armClockIcons = this.icons.transform.Find("ArmUI_ClockIcons").gameObject;
+            this.palmIcons = this.icons.transform.Find("PalmIcons").gameObject;
             this.firstAppIcons = this.icons.transform.Find("FirstAppIcons").gameObject;
             this.secondAppIcons = this.icons.transform.Find("SecondAppIcons").gameObject;
+            this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
+            this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
+
+            this.palmCenter = this.vwUI.transform.parent.Find("PalmCenter").gameObject; //raw tracked palm center
+            this.palmCenter.transform.parent = this.vwUI.transform.parent;
+            this.palmLookAtCenter = new GameObject("palmLookAtCenter");
+            this.palmLookAtCenter.transform.parent = this.palmCenter.transform;
+            this.palmLookAtCenter.transform.position = new Vector3(0, 0f, 0.125f);
+            //this.palmLookAtCenter.transform.localScale = Vector3.zero;
+            //this.palmLookAtCenter.SetActive(false);
+
+            appIconRenderers = new List<MeshRenderer>();
+            foreach (MeshRenderer renderer in appIconsOnRightHand.GetComponentsInChildren<MeshRenderer>())
+            {
+                this.appIconRenderers.Add(renderer);
+            }
+
+            float ellipsoidSize = 0.065f; //meter
+            float ellipsoidHeight = 0.065f; //meter
+            int PARTITIONED_NUM = 5; //app num
+            this.ellipsoid = new Ellipsoid(this.palmLookAtCenter.transform.position,
+                new Vector3(ellipsoidSize, ellipsoidSize, ellipsoidHeight),
+                140f, PARTITIONED_NUM);
+            for (int i = 0; i < PARTITIONED_NUM; i++)
+            {
+                var appCenter = new GameObject("appCenter" + i);
+                //TODO: Change position to sphere position later
+                appCenter.transform.position = ellipsoid.PositionOnSphere(i, -ellipsoidHeight * 0.75f);
+                appCenter.transform.LookAt(this.palmLookAtCenter.transform, Vector3.forward);
+                appCenter.transform.parent = this.palmLookAtCenter.transform;
+            }
+
 
             //Disable mesh
             Util.EnableMeshRendererRecursively(this.firstAppIcons, false);
             Util.EnableMeshRendererRecursively(this.secondAppIcons, false);
 
-            /*
-            Debug.Log("d1");
-            foreach (Transform child in this.firstHandWingUI.transform) {
-                if (child.GetChildCount() > 0) {
-                    Transform grandChild = child.GetChild(0);
-                    Debug.Log(grandChild.localRotation);
-                }
-            }
-            */
+            //this.MoveChildren(this.firstAppIcons, this.firstHandWingUI, this.iconOcclusions);
+            //this.MoveChildren(this.secondAppIcons, this.secondHandWingUI, this.iconOcclusions);
 
-            this.MoveChildren(this.firstAppIcons, this.firstHandWingUI);
-            this.MoveChildren(this.secondAppIcons, this.secondHandWingUI);
-            this.MoveChildren(this.palmUIIcons, this.palmUI);
+            //this.MoveIconsIntoUI(this.palmIcons, this.palmUI, new Vector3(0f, 0.00175f, 0f), Quaternion.Euler(0, 0, 0));
+            this.MoveIconsIntoUI(this.armGeneralIcons, this.armUIGeneral, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
+            this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
+            this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0), null );
+            //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            this.MoveIconsIntoUI(this.appIconsOnRightHand, this.palmLookAtCenter, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 0, 0), APP_SCALE_ON_FINGERS);
 
-            /*
-            Debug.Log("d2");
-            foreach (Transform child in this.firstHandWingUI.transform) {
-                if (child.GetChildCount() > 0) {
-                    Transform grandChild = child.GetChild(0);
-                    Debug.Log(grandChild.localRotation);
-                }
-            }*/
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(1, 0.15f, 2.5f) );
 
             this.handUtil = new HandUtil(playerHeadTransform);
-            Debug.Log("handUtil: " + handUtil);
+            //Debug.Log("handUtil: " + handUtil);
 
             this.isVisibleVirtualWearable = false;
         }
 
-        private void MoveChildren(GameObject sourceParent, GameObject targetParent)
+        private void Start()
+        {
+            this.palmLookAtCenter.transform.localScale = Vector3.zero;
+            this.palmLookAtCenter.SetActive(false);
+        }
+
+
+        private void FixedUpdate()
+        {
+            float cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
+            foreach (MeshRenderer renderer in appIconRenderers)
+            {
+                renderer.sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+                //renderer.sharedMaterial.SetFloat("_CyberCircuitSeed", cyberCircuitTime);
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (!isShowGizmo) return;
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.x);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.z);
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireCube(this.palmLookAtCenter.transform.position, 0.03f * Vector3.one);
+        }
+
+        private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent,
+            Vector3? localPosition, Quaternion? localRotation, Vector3? localScale)
         {
             //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
             for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
             {
-                Transform s = sourceParent.transform.GetChild(i);
-                Transform t = targetParent.transform.GetChild(i);
-                s.parent = t;
-                s.localPosition = Vector3.zero;
-                //s.localRotation = Quaternion.AngleAxis(270, Vector3.left);
-
-                //s.localRotation = Quaternion.Euler(0, 0, 0);
-
-                /*
-                Debug.Log("Name: " + sourceParent.gameObject.name);
-                Debug.Log("Child Name: " + s.gameObject.name);
-                Debug.Log("Rotation1: " + s.localRotation);*/
+                Transform source = sourceParent.transform.GetChild(i);
+                Transform target = targetParent.transform.GetChild(i);
+                source.parent = target;
+                if (localScale.HasValue) { source.localScale = localScale.Value; }
+                if (localPosition.HasValue) { source.localPosition = localPosition.Value; }
+                if (localRotation.HasValue) { source.localRotation = localRotation.Value; }
             }
+        }
+
+        private void MoveOcculutionsIntoUI(GameObject occlutionParent, GameObject targetParent,
+               Vector3 localPosition, Vector3 localScale)
+        {
+            //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
+            for (int i = targetParent.gameObject.transform.childCount - 1; i >= 0; i--)
+            {
+                GameObject occulutionGO = InstantiateRandomOcclutionGO(occlutionParent);
+                Transform target = targetParent.transform.GetChild(i);
+                occulutionGO.transform.parent = target;
+                occulutionGO.transform.localPosition = localPosition;
+                occulutionGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                occulutionGO.transform.localScale = localScale;
+            }
+        }
+
+        public GameObject InstantiateRandomOcclutionGO(GameObject occlutionParent)
+        {
+            int index = Random.Range(0, occlutionParent.transform.childCount);
+            GameObject occlutionObj = Instantiate(occlutionParent.transform.GetChild(index).gameObject);
+            return occlutionObj;
         }
 
         public void AdjustVirtualWearable(Hand hand)
         {
             Vector3 palmPosition = HandUtil.ToVector3(hand.PalmPosition);
+            Quaternion palmQuaternion = HandUtil.ToQuaternion(hand.Rotation);
             Vector3 directionTowardsIndexFinger = HandUtil.ToVector3(hand.Direction);
             Vector3 handNormal = HandUtil.ToVector3(hand.PalmNormal);
 
@@ -111,14 +241,14 @@ namespace VW
             Vector3 directionTowardsThumb = Vector3.Cross(handNormal, directionTowardsIndexFinger).normalized;
             this.vwUI.transform.position = palmPosition + directionTowardsIndexFinger * HAND_AJUST__TOWARDS_FINGER;
             this.vwUI.transform.position += directionTowardsThumb * HAND_AJUST__TOWARDS_THUMB;
-            this.vwUI.transform.rotation = HandUtil.ToQuaternion(hand.Rotation) *
+            this.vwUI.transform.rotation = palmQuaternion *
                 Quaternion.AngleAxis(180, Vector3.forward) *
                 Quaternion.AngleAxis(180, Vector3.up);
 
             // Arm position, rotation, and scale
-            this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(180, Vector3.left);
-            this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(180, Vector3.left);
-            this.armRingUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(180, Vector3.left);
+            this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
+            this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
+            this.armRingUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
             /*
             this.arm.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
             this.armUI.transform.rotation = HandUtil.ToQuaternion(hand.Arm.Rotation) * Quaternion.AngleAxis(270, Vector3.left);
@@ -132,12 +262,15 @@ namespace VW
             //Debug.Log("width: " + hand.Arm.Width);
             //Debug.Log("length: " + hand.Arm.Length);
 
+            this.palmCenter.transform.position = palmPosition;
+            this.palmCenter.transform.rotation = palmQuaternion * Quaternion.AngleAxis(270, Vector3.left);
+
             /*
             // Icons
-            for (int i = 0; i < this.palmUIIcons.gameObject.transform.childCount; i++)
+            for (int i = 0; i < this.palmIcons.gameObject.transform.childCount; i++)
             {
-                this.palmUIIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
-                this.palmUIIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+                this.palmIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
+                this.palmIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
             }
             for (int i = 0; i < this.firstAppIcons.gameObject.transform.childCount; i++)
             {
