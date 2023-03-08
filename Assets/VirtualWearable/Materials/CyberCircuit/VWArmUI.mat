@@ -20,18 +20,18 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CyberWing
+  m_Name: VWArmUI
   m_Shader: {fileID: -6465566751694194690, guid: 16b564bdb055e5846887f7a90f4caca7,
     type: 3}
   m_ValidKeywords:
   - OUTPUTTYPE_GRAY_COLOR
-  - _ENABLE_FOG_ON_TRANSPARENT
+  - _ALPHATEST_ON
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: 3001
   stringTagMap:
     MotionVector: User
     RenderType: Transparent
@@ -102,14 +102,14 @@ Material:
     m_Ints: []
     m_Floats:
     - OUTPUTTYPE: 0
-    - Randomness: 1
+    - Randomness: 2
     - Time: 0
-    - VoronoiWeight: 0
-    - WaveScale: 7.18
+    - VoronoiWeight: 1.5
+    - WaveScale: 6
     - Weight: 0
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
-    - _AlphaCutoffEnable: 0
+    - _AlphaCutoffEnable: 1
     - _AlphaDstBlend: 10
     - _AlphaSrcBlend: 1
     - _AlphaToMask: 0
@@ -124,6 +124,9 @@ Material:
     - _CullMode: 2
     - _CullModeForward: 2
     - _Cutoff: 0.5
+    - _CyberCircuidSeed: 0
+    - _CyberCircuitSeed: 1
+    - _CyberCircuitTime: 3.6
     - _DepthOffsetEnable: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -132,7 +135,7 @@ Material:
     - _DoubleSidedNormalMode: 2
     - _DstBlend: 10
     - _EnableBlendModePreserveSpecularLighting: 0
-    - _EnableFogOnTransparent: 1
+    - _EnableFogOnTransparent: 0
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -142,6 +145,7 @@ Material:
     - _OpaqueCullMode: 2
     - _Parallax: 0.005
     - _QueueOffset: 0
+    - _Randomness: 2.5
     - _ReceiveShadows: 1
     - _RenderQueueType: 4
     - _Smoothness: 0.5
@@ -164,21 +168,21 @@ Material:
     - _TransparentCullMode: 2
     - _TransparentDepthPostpassEnable: 0
     - _TransparentDepthPrepassEnable: 0
-    - _TransparentSortPriority: 0
+    - _TransparentSortPriority: 1
     - _TransparentWritingMotionVec: 0
-    - _TransparentZWrite: 0
+    - _TransparentZWrite: 1
     - _UseShadowThreshold: 0
     - _WorkflowMode: 1
     - _ZTestDepthEqualForOpaque: 4
-    - _ZTestGBuffer: 4
+    - _ZTestGBuffer: 3
     - _ZTestTransparent: 4
-    - _ZWrite: 0
+    - _ZWrite: 1
     - minkowskiPower: 1
     m_Colors:
     - Tiling: {r: 10, g: 10, b: 0, a: 0}
-    - VoronoiTiling: {r: 6, g: 6, b: 0, a: 0}
+    - VoronoiTiling: {r: 12, g: 7, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1.0451974, g: 4.6287313, b: 7.1297393, a: 1}
+    - _Color: {r: 1.2422895, g: 5.501568, b: 8.47419, a: 1}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}

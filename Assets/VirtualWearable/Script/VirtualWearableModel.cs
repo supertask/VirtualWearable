@@ -48,8 +48,9 @@ namespace VW
         public GameObject icons;
         public GameObject rightHand;
         public bool isShowGizmo = true;
+        public List<MeshRenderer> cyberCircuitMeshes;
 
-        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI;
+        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI, thumbUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
         private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
         private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
@@ -80,7 +81,8 @@ namespace VW
         private Ellipsoid ellipsoid;
         private List<MeshRenderer> appIconRenderers;
         //private float cyberCircuitTimeSpeed = 0.075f;
-        private float cyberCircuitTimeSpeed = 0.5f;
+        private float appCyberCircuitTimeSpeed = 0.5f;
+        private float cyberCircuitTimeSpeed = 0.1f;
 
         void Awake()
         {
@@ -92,6 +94,7 @@ namespace VW
 
             this.armRingUI = this.vwUI.transform.Find("ArmRingUI").gameObject;
             this.palmUI = this.vwUI.transform.Find("PalmUI").gameObject;
+            this.thumbUI = this.vwUI.transform.Find("ThumbUI").gameObject;
             this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
             this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
 
@@ -172,12 +175,16 @@ namespace VW
 
         private void FixedUpdate()
         {
-            float cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
+            float cyberCircuitTime = Time.time * appCyberCircuitTimeSpeed;
             foreach (MeshRenderer renderer in appIconRenderers)
             {
                 renderer.sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
                 //renderer.sharedMaterial.SetFloat("_CyberCircuitSeed", cyberCircuitTime);
             }
+            cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
+            this.palmUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+            this.armUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+            this.thumbUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
         }
 
         private void OnDrawGizmos()

@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CyberHandPalm
+  m_Name: VWPalmUI
   m_Shader: {fileID: -6465566751694194690, guid: 16b564bdb055e5846887f7a90f4caca7,
     type: 3}
   m_ValidKeywords:
@@ -124,6 +124,9 @@ Material:
     - _CullMode: 2
     - _CullModeForward: 2
     - _Cutoff: 0.5
+    - _CyberCircuidSeed: 0
+    - _CyberCircuitSeed: 1
+    - _CyberCircuitTime: 3.6
     - _DepthOffsetEnable: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -142,6 +145,7 @@ Material:
     - _OpaqueCullMode: 2
     - _Parallax: 0.005
     - _QueueOffset: 0
+    - _Randomness: 2.5
     - _ReceiveShadows: 1
     - _RenderQueueType: 4
     - _Smoothness: 0.5

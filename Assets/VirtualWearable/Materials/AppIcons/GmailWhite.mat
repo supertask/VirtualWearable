@@ -159,7 +159,7 @@ Material:
     - _Cutoff: 0.5
     - _CyberCircuitScale: 15
     - _CyberCircuitSeed: 0
-    - _CyberCircuitTime: 0
+    - _CyberCircuitTime: 3.6
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
@@ -305,7 +305,7 @@ Material:
     - _FresnelColor: {r: 0, g: 0.8525124, b: 1, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
-    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
+    - _MainColor: {r: 0.794, g: 0.794, b: 0.794, a: 1}
     - _NoiseTilingAndOffset: {r: 0.8, g: 0.82, b: 0.65, a: 0}
     - _Offset: {r: 3.35, g: 1.92, b: 0, a: 0}
     - _PerlinNoiseScale2D: {r: 10, g: 10, b: 0, a: 0}
