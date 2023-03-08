@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Gmail
+  m_Name: GmailRed
   m_Shader: {fileID: -6465566751694194690, guid: b83631189089c544299f2ca40f80d898,
     type: 3}
   m_ValidKeywords:
@@ -158,6 +158,8 @@ Material:
     - _CullModeForward: 2
     - _Cutoff: 0.5
     - _CyberCircuitScale: 15
+    - _CyberCircuitSeed: 0
+    - _CyberCircuitTime: 0
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1

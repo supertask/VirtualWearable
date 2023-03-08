@@ -150,6 +150,8 @@ Material:
     - _CullModeForward: 2
     - _Cutoff: 0.5
     - _CyberCircuitScale: 10
+    - _CyberCircuitSeed: 0
+    - _CyberCircuitTime: 0
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
