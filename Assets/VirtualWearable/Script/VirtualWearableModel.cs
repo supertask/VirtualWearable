@@ -54,6 +54,7 @@ namespace VW
         private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
         private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
         private GameObject[] rightFingers;
+        private HandUtil handUtil;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
@@ -63,11 +64,14 @@ namespace VW
         public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 4;
         public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" }; 
 
-        private HandUtil handUtil;
+        public Transform playerHeadTransform;
         public HandUtil handUtilAccess {
             get { return handUtil; }
         }
-        public Transform playerHeadTransform;
+        public GameObject PalmLookAtCenter
+        {
+            get { return palmLookAtCenter; }
+        }
 
         private bool isVisibleVirtualWearable;
         public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
@@ -101,13 +105,17 @@ namespace VW
             this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
-            this.palmCenter = new GameObject("palmCenter");
+            //this.palmCenter = new GameObject("PalmCenter");
+            this.palmCenter = this.vwUI.transform.parent.Find("PalmCenter").gameObject;
             this.palmCenter.transform.parent = this.vwUI.transform.parent;
             this.palmLookAtCenter = new GameObject("palmLookAtCenter");
             this.palmLookAtCenter.transform.parent = this.palmCenter.transform;
             this.palmLookAtCenter.transform.position = new Vector3(0, 0.06f, 0);
-            float ellipsoidSize = 0.09f; //meter
-            float ellipsoidHeight = 0.06f; //meter
+            //this.palmLookAtCenter.transform.localScale = Vector3.zero;
+            //this.palmLookAtCenter.SetActive(false);
+
+            float ellipsoidSize = 0.06f; //meter
+            float ellipsoidHeight = 0.09f; //meter
             int PARTITIONED_NUM = 5; //app num
             Ellipsoid ellipsoid = new Ellipsoid(this.palmLookAtCenter.transform.position,
                 new Vector3(ellipsoidSize, ellipsoidSize, ellipsoidHeight),
@@ -116,7 +124,7 @@ namespace VW
             {
                 var appCenter = new GameObject("appCenter" + i);
                 //TODO: Change position to sphere position later
-                appCenter.transform.position = ellipsoid.PositionOnSphere(i, - ellipsoidHeight / 2.0f);
+                appCenter.transform.position = ellipsoid.PositionOnSphere(i, 0);
                 appCenter.transform.LookAt(this.palmLookAtCenter.transform, Vector3.forward);
                 appCenter.transform.parent = this.palmLookAtCenter.transform;
             }
@@ -144,6 +152,12 @@ namespace VW
             //Debug.Log("handUtil: " + handUtil);
 
             this.isVisibleVirtualWearable = false;
+        }
+
+        private void Start()
+        {
+            this.palmLookAtCenter.transform.localScale = Vector3.zero;
+            this.palmLookAtCenter.SetActive(false);
         }
 
 

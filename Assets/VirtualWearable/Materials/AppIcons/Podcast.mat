@@ -12,17 +12,18 @@ Material:
     type: 3}
   m_ValidKeywords:
   - _ALPHATEST_ON
+  - _ALPHATOMASK_ON
   - _DISABLE_DECALS
+  - _DISABLE_SSR
   - _DISABLE_SSR_TRANSPARENT
-  - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: 2450
   stringTagMap:
     MotionVector: User
-    RenderType: Transparent
+    RenderType: TransparentCutout
   disabledShaderPasses:
   - MOTIONVECTORS
   - TransparentDepthPrepass
@@ -145,10 +146,10 @@ Material:
     - _AlphaCutoffPostpass: 0.5
     - _AlphaCutoffPrepass: 0.5
     - _AlphaCutoffShadow: 0.5
-    - _AlphaDstBlend: 10
+    - _AlphaDstBlend: 0
     - _AlphaSrcBlend: 1
-    - _AlphaToMask: 0
-    - _AlphaToMaskInspectorValue: 0
+    - _AlphaToMask: 1
+    - _AlphaToMaskInspectorValue: 1
     - _Anisotropy: 0
     - _BlendMode: 0
     - _CoatMask: 0
@@ -188,7 +189,7 @@ Material:
     - _DoubleSidedEnable: 0
     - _DoubleSidedGIMode: 0
     - _DoubleSidedNormalMode: 2
-    - _DstBlend: 10
+    - _DstBlend: 0
     - _EmissiveColorMode: 1
     - _EmissiveExposureWeight: 1
     - _EmissiveIntensity: 1
@@ -202,7 +203,7 @@ Material:
     - _FirstEffectSecondLayerDissolveInterpolation: 0.2
     - _FirstLayerDissolveInterpolation: 0
     - _FourthEffect: 0
-    - _FresnelPower: 3.5
+    - _FresnelPower: 3.77
     - _HdrpVersion: 2
     - _HeightAmplitude: 0.02
     - _HeightCenter: 0.5
@@ -230,10 +231,10 @@ Material:
     - _PPDPrimitiveWidth: 1
     - _PerlinNoiseFilter: 0.01
     - _RayTracing: 0
-    - _ReceivesSSR: 1
+    - _ReceivesSSR: 0
     - _ReceivesSSRTransparent: 0
     - _RefractionModel: 0
-    - _RenderQueueType: 4
+    - _RenderQueueType: 1
     - _RequireSplitLighting: 0
     - _SSRefractionProjectionModel: 0
     - _SecondEffect: 0
@@ -260,7 +261,7 @@ Material:
     - _StripeNum: 50
     - _SubsurfaceMask: 1
     - _SupportDecals: 0
-    - _SurfaceType: 1
+    - _SurfaceType: 0
     - _TexWorldScale: 1
     - _TexWorldScaleEmissive: 1
     - _Thickness: 1
@@ -272,7 +273,7 @@ Material:
     - _TransparentDepthPrepassEnable: 0
     - _TransparentSortPriority: 0
     - _TransparentWritingMotionVec: 0
-    - _TransparentZWrite: 0
+    - _TransparentZWrite: 1
     - _UVBase: 0
     - _UVDetail: 0
     - _UVEmissive: 0
@@ -281,18 +282,18 @@ Material:
     - _VoronoiTime: 1
     - _VoronoiW: 0
     - _WaveScale: 6
-    - _ZTestDepthEqualForOpaque: 4
+    - _ZTestDepthEqualForOpaque: 3
     - _ZTestGBuffer: 3
     - _ZTestModeDistortion: 8
     - _ZTestTransparent: 4
-    - _ZWrite: 0
+    - _ZWrite: 1
     m_Colors:
     - Color_96AEE064: {r: 0.72606945, g: 1.6180975, b: 1.9811323, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _ClippingNoiseTilingAndOffset: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _CyberCircuitColor: {r: 0.5359615, g: 3.0920858, b: 4.184623, a: 0}
+    - _CyberCircuitColor: {r: 0.54772556, g: 3.1110814, b: 4.1846232, a: 0}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
@@ -302,7 +303,7 @@ Material:
     - _FresnelColor: {r: 0, g: 0.8525124, b: 1, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
-    - _MainColor: {r: 0.6366402, g: 0, b: 0.6784314, a: 1}
+    - _MainColor: {r: 0.75089973, g: 0, b: 0.8018868, a: 1}
     - _NoiseTilingAndOffset: {r: 0.8, g: 0.82, b: 0.65, a: 0}
     - _Offset: {r: 3.35, g: 1.92, b: 0, a: 0}
     - _PerlinNoiseScale2D: {r: 10, g: 10, b: 0, a: 0}
