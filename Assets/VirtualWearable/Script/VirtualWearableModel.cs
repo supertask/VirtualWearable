@@ -9,36 +9,61 @@ using static Leap.Finger;
 
 namespace VW
 {
-    public class Ellipsoid
+    public class AppAreaSpheroid
     {
+        public struct AppAreaLayer
+        {
+            public int partitionedNum; //app num, 分割数
+            public float displayingAngle;
+            public float phi;
+        }
+
         public Vector3 center;
         public Vector3 radius;
-        public float angle; //0 to 360 degree
-        public float partitionedNum;
+        private AppAreaLayer[] appAreaLayers;
 
-        public Ellipsoid(Vector3 center, Vector3 radius, float angle, int partitionedNum)
+        public AppAreaSpheroid(Vector3 center, Vector3 radius)
         {
             this.center = center;
             this.radius = radius;
-            this.angle = angle;
-            this.partitionedNum = partitionedNum;
+
+            this.appAreaLayers = new AppAreaLayer[2]
+            {
+                new AppAreaLayer() { partitionedNum = 5, displayingAngle = 120f, phi = Mathf.PI * 0.57f },
+                new AppAreaLayer() { partitionedNum = 6, displayingAngle = 160f, phi = Mathf.PI * 0.7f }
+            };
         }
 
-        //partitionedNum: 分割数
-        public Vector3 PositionOnSphere(int index, float height)
+        public Vector3 PositionOnSphere(int index, float phi, float angle, int partitionedNum)
         {
-            // 角度を計算する
             float partitionedAngle = angle / partitionedNum;
             float offsetAngle = 90f - angle / 2f;
-            float radian = (offsetAngle + index * partitionedAngle) * Mathf.Deg2Rad;
+            float currentTheta = (offsetAngle + index * partitionedAngle) * Mathf.Deg2Rad;
 
-            // 楕円球上の点を計算する
+            //https://www.tutorialspoint.com/plotting-points-on-the-surface-of-a-sphere-in-python-s-matplotlib
             Vector3 point = new Vector3(
-                center.x + radius.x * Mathf.Cos(radian),
-                center.y + radius.y * Mathf.Sin(radian),
-                center.z + height
+                center.x + radius.x * Mathf.Sin(phi) * Mathf.Cos(currentTheta),
+                center.y + radius.y * Mathf.Sin(phi) * Mathf.Sin(currentTheta),
+                center.z + radius.z * Mathf.Cos(phi)
             );
             return point;
+        }
+
+        public void SetAppPointsIn(GameObject appPointsParent)
+        {
+            for (int li = 0; li < appAreaLayers.Length; li++)
+            {
+                for (int pi = 0; pi < appAreaLayers[li].partitionedNum; pi++)
+                {
+                    var appPointObj = new GameObject("AppPoint:" + (li * pi));
+                    appPointObj.transform.position = this.PositionOnSphere(
+                        pi, appAreaLayers[li].phi,
+                        appAreaLayers[li].displayingAngle, appAreaLayers[li].partitionedNum
+                    );
+                    appPointObj.transform.LookAt(appPointsParent.transform, Vector3.forward);
+                    appPointObj.transform.parent = appPointsParent.transform;
+                }
+            }
         }
     }
 
@@ -78,7 +103,7 @@ namespace VW
         public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
         private GameObject palmCenter;
         private GameObject palmLookAtCenter;
-        private Ellipsoid ellipsoid;
+        private AppAreaSpheroid spheroid;
         private List<MeshRenderer> appIconRenderers;
         //private float cyberCircuitTimeSpeed = 0.075f;
         private float appCyberCircuitTimeSpeed = 0.5f;
@@ -116,7 +141,7 @@ namespace VW
             this.palmCenter.transform.parent = this.vwUI.transform.parent;
             this.palmLookAtCenter = new GameObject("palmLookAtCenter");
             this.palmLookAtCenter.transform.parent = this.palmCenter.transform;
-            this.palmLookAtCenter.transform.position = new Vector3(0, 0f, 0.125f);
+            this.palmLookAtCenter.transform.position = new Vector3(0, 0f, 0.1f);
             //this.palmLookAtCenter.transform.localScale = Vector3.zero;
             //this.palmLookAtCenter.SetActive(false);
 
@@ -126,21 +151,9 @@ namespace VW
                 this.appIconRenderers.Add(renderer);
             }
 
-            float ellipsoidSize = 0.065f; //meter
-            float ellipsoidHeight = 0.065f; //meter
-            int PARTITIONED_NUM = 5; //app num
-            this.ellipsoid = new Ellipsoid(this.palmLookAtCenter.transform.position,
-                new Vector3(ellipsoidSize, ellipsoidSize, ellipsoidHeight),
-                140f, PARTITIONED_NUM);
-            for (int i = 0; i < PARTITIONED_NUM; i++)
-            {
-                var appCenter = new GameObject("appCenter" + i);
-                //TODO: Change position to sphere position later
-                appCenter.transform.position = ellipsoid.PositionOnSphere(i, -ellipsoidHeight * 0.75f);
-                appCenter.transform.LookAt(this.palmLookAtCenter.transform, Vector3.forward);
-                appCenter.transform.parent = this.palmLookAtCenter.transform;
-            }
-
+            this.spheroid = new AppAreaSpheroid(this.palmLookAtCenter.transform.position,
+                new Vector3(0.075f, 0.065f, 0.065f) );
+            this.spheroid.SetAppPointsIn(this.palmLookAtCenter);
 
             //Disable mesh
             Util.EnableMeshRendererRecursively(this.firstAppIcons, false);
@@ -191,9 +204,9 @@ namespace VW
         {
             if (!isShowGizmo) return;
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.x);
+            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.spheroid.radius.x);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.z);
+            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.spheroid.radius.z);
             Gizmos.color = Color.white;
             Gizmos.DrawWireCube(this.palmLookAtCenter.transform.position, 0.03f * Vector3.one);
         }

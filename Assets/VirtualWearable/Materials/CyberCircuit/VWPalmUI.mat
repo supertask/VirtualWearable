@@ -126,7 +126,7 @@ Material:
     - _Cutoff: 0.5
     - _CyberCircuidSeed: 0
     - _CyberCircuitSeed: 1
-    - _CyberCircuitTime: 3.6
+    - _CyberCircuitTime: 7.808
     - _DepthOffsetEnable: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -145,7 +145,7 @@ Material:
     - _OpaqueCullMode: 2
     - _Parallax: 0.005
     - _QueueOffset: 0
-    - _Randomness: 2.5
+    - _Randomness: 2.7
     - _ReceiveShadows: 1
     - _RenderQueueType: 4
     - _Smoothness: 0.5
