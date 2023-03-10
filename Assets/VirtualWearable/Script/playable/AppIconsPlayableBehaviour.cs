@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace VW
+namespace VirtualWearable
 {
     // A behaviour that is attached to a playable
     public class AppIconsPlayableBehaviour : PlayableBehaviour

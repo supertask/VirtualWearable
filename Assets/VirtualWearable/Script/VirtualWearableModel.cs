@@ -7,107 +7,54 @@ using Leap;
 using Leap.Unity;
 using static Leap.Finger;
 
-namespace VW
+namespace VirtualWearable
 {
-    public class AppAreaSpheroid
+
+    public class VirtualWearableModel : MonoBehaviour
     {
-        public struct AppAreaLayer
-        {
-            public int partitionedNum; //app num, 分割数
-            public float displayingAngle;
-            public float phi;
-        }
-
-        public Vector3 center;
-        public Vector3 radius;
-        private AppAreaLayer[] appAreaLayers;
-
-        public AppAreaSpheroid(Vector3 center, Vector3 radius)
-        {
-            this.center = center;
-            this.radius = radius;
-
-            this.appAreaLayers = new AppAreaLayer[2]
-            {
-                new AppAreaLayer() { partitionedNum = 5, displayingAngle = 120f, phi = Mathf.PI * 0.57f },
-                new AppAreaLayer() { partitionedNum = 6, displayingAngle = 160f, phi = Mathf.PI * 0.7f }
-            };
-        }
-
-        public Vector3 PositionOnSphere(int index, float phi, float angle, int partitionedNum)
-        {
-            float partitionedAngle = angle / partitionedNum;
-            float offsetAngle = 90f - angle / 2f;
-            float currentTheta = (offsetAngle + index * partitionedAngle) * Mathf.Deg2Rad;
-
-            //https://www.tutorialspoint.com/plotting-points-on-the-surface-of-a-sphere-in-python-s-matplotlib
-            Vector3 point = new Vector3(
-                center.x + radius.x * Mathf.Sin(phi) * Mathf.Cos(currentTheta),
-                center.y + radius.y * Mathf.Sin(phi) * Mathf.Sin(currentTheta),
-                center.z + radius.z * Mathf.Cos(phi)
-            );
-            return point;
-        }
-
-        public void SetAppPointsIn(GameObject appPointsParent)
-        {
-            for (int li = 0; li < appAreaLayers.Length; li++)
-            {
-                for (int pi = 0; pi < appAreaLayers[li].partitionedNum; pi++)
-                {
-                    var appPointObj = new GameObject("AppPoint:" + (li * pi));
-                    appPointObj.transform.position = this.PositionOnSphere(
-                        pi, appAreaLayers[li].phi,
-                        appAreaLayers[li].displayingAngle, appAreaLayers[li].partitionedNum
-                    );
-                    appPointObj.transform.LookAt(appPointsParent.transform, Vector3.forward);
-                    appPointObj.transform.parent = appPointsParent.transform;
-                }
-            }
-        }
-    }
-
-    public class VirtualWearableModel: MonoBehaviour
-    {
+        #region Serialized fields
         public GameObject vwUI; //Virtual Wearable UI
         public GameObject icons;
         public GameObject rightHand;
-        public bool isShowGizmo = true;
-        public List<MeshRenderer> cyberCircuitMeshes;
-
-        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI, thumbUI;
-        private GameObject palmUI, firstHandWingUI, secondHandWingUI;
-        private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
-        private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
-        private GameObject[] rightFingers;
-        private HandUtil handUtil;
+        public GameObject stage;
+        public Transform playerHeadTransform;
+        public GameObject appShowcaseOnStage;
+        public GameObject appShowcaseOnHand;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
+
+        [SerializeField] private AppArea.AppDisplayingMode appDisplayingMode;
+        [SerializeField] private AppArea appArea;
+        public bool isShowGizmo = true;
+        #endregion
+
+        #region public
+        public HandUtil handUtilAccess { get { return handUtil; } }
+        public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
+        public AppArea AppArea { get { return appArea; } }
+
         public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
         public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
         public readonly Vector3 DEFAULT_OCCLUTION_SCALE = new Vector3(1, 0.15f, 1);
         public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 3;
-        public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" }; 
+        public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" };
+        #endregion
 
-        public Transform playerHeadTransform;
-        public HandUtil handUtilAccess {
-            get { return handUtil; }
-        }
-        public GameObject PalmLookAtCenter
-        {
-            get { return palmLookAtCenter; }
-        }
+
+        #region private
+        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI, thumbUI;
+        private GameObject palmUI, firstHandWingUI, secondHandWingUI;
+        private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
+        private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
+        private HandUtil handUtil;
 
         private bool isVisibleVirtualWearable;
-        public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
-        private GameObject palmCenter;
-        private GameObject palmLookAtCenter;
-        private AppAreaSpheroid spheroid;
-        private List<MeshRenderer> appIconRenderers;
-        //private float cyberCircuitTimeSpeed = 0.075f;
+
         private float appCyberCircuitTimeSpeed = 0.5f;
         private float cyberCircuitTimeSpeed = 0.1f;
+
+        #endregion
 
         void Awake()
         {
@@ -123,11 +70,6 @@ namespace VW
             this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
             this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
 
-            this.rightFingers = GameObject.FindGameObjectsWithTag("RightFingers");
-            //Debug.Log("finger: " + fingers);
-            //Debug.Log("finger: " + fingers.Length);
-            //Debug.Log("finger: " + fingers[0]);
-
             this.armGeneralIcons = this.icons.transform.Find("ArmUI_GeneralIcons").gameObject;
             this.armSystemIcons = this.icons.transform.Find("ArmUI_SystemIcons").gameObject;
             this.armClockIcons = this.icons.transform.Find("ArmUI_ClockIcons").gameObject;
@@ -137,28 +79,16 @@ namespace VW
             this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
-            this.palmCenter = this.vwUI.transform.parent.Find("PalmCenter").gameObject; //raw tracked palm center
-            this.palmCenter.transform.parent = this.vwUI.transform.parent;
-            this.palmLookAtCenter = new GameObject("palmLookAtCenter");
-            this.palmLookAtCenter.transform.parent = this.palmCenter.transform;
-            this.palmLookAtCenter.transform.position = new Vector3(0, 0f, 0.1f);
-            //this.palmLookAtCenter.transform.localScale = Vector3.zero;
-            //this.palmLookAtCenter.SetActive(false);
+            GameObject appShowcase = null;
+            if (appDisplayingMode == AppArea.AppDisplayingMode.InLineOfSight) { appShowcase = appShowcaseOnStage; }
+            else if (appDisplayingMode == AppArea.AppDisplayingMode.OnHand) { appShowcase = appShowcaseOnHand; }
+            this.appArea = new AppArea(this.appIconsOnRightHand, appShowcase, appDisplayingMode);
+            //this.appArea = new AppArea(this.appIconsOnRightHand, appShowcaseOnStage, appShowcaseOnHand);
 
-            appIconRenderers = new List<MeshRenderer>();
-            foreach (MeshRenderer renderer in appIconsOnRightHand.GetComponentsInChildren<MeshRenderer>())
-            {
-                this.appIconRenderers.Add(renderer);
-            }
-
-            this.spheroid = new AppAreaSpheroid(this.palmLookAtCenter.transform.position,
-                new Vector3(0.075f, 0.065f, 0.065f) );
-            this.spheroid.SetAppPointsIn(this.palmLookAtCenter);
 
             //Disable mesh
             Util.EnableMeshRendererRecursively(this.firstAppIcons, false);
             Util.EnableMeshRendererRecursively(this.secondAppIcons, false);
-
             //this.MoveChildren(this.firstAppIcons, this.firstHandWingUI, this.iconOcclusions);
             //this.MoveChildren(this.secondAppIcons, this.secondHandWingUI, this.iconOcclusions);
 
@@ -167,7 +97,7 @@ namespace VW
             this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
             this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0), null );
             //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), DEFAULT_OCCLUTION_SCALE );
-            this.MoveIconsIntoUI(this.appIconsOnRightHand, this.palmLookAtCenter, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 0, 0), APP_SCALE_ON_FINGERS);
+            this.MoveIconsIntoUI(this.appIconsOnRightHand, this.appArea.SpheroidCenterObj, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 0, 0), APP_SCALE_ON_FINGERS);
 
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
             this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
@@ -181,18 +111,17 @@ namespace VW
 
         private void Start()
         {
-            this.palmLookAtCenter.transform.localScale = Vector3.zero;
-            this.palmLookAtCenter.SetActive(false);
+            this.appArea.SpheroidCenterObj.transform.localScale = Vector3.zero;
+            this.appArea.SpheroidCenterObj.SetActive(false);
         }
 
 
         private void FixedUpdate()
         {
             float cyberCircuitTime = Time.time * appCyberCircuitTimeSpeed;
-            foreach (MeshRenderer renderer in appIconRenderers)
+            foreach (MeshRenderer renderer in this.appArea.AppIconRenderers)
             {
                 renderer.sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
-                //renderer.sharedMaterial.SetFloat("_CyberCircuitSeed", cyberCircuitTime);
             }
             cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
             this.palmUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
@@ -204,11 +133,11 @@ namespace VW
         {
             if (!isShowGizmo) return;
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.spheroid.radius.x);
+            Gizmos.DrawWireSphere(this.appArea.SpheroidCenterObj.transform.position, this.appArea.SpheroidData.radius.x);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.spheroid.radius.z);
+            Gizmos.DrawWireSphere(this.appArea.SpheroidCenterObj.transform.position, this.appArea.SpheroidData.radius.z);
             Gizmos.color = Color.white;
-            Gizmos.DrawWireCube(this.palmLookAtCenter.transform.position, 0.03f * Vector3.one);
+            Gizmos.DrawWireCube(this.appArea.SpheroidCenterObj.transform.position, 0.03f * Vector3.one);
         }
 
         private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent,
@@ -279,30 +208,27 @@ namespace VW
                 hand.Arm.Width / ARM_WIDTH_METER_IN_BLENDER,
                 hand.Arm.Length / ARM_LENGTH_METER_IN_BLENDER,
                 1);
-            //Debug.Log("width: " + hand.Arm.Width);
-            //Debug.Log("length: " + hand.Arm.Length);
 
-            this.palmCenter.transform.position = palmPosition;
-            this.palmCenter.transform.rotation = palmQuaternion * Quaternion.AngleAxis(270, Vector3.left);
+            appArea.UpdateTransform(palmPosition, palmQuaternion);
 
-            /*
+
+
             // Icons
-            for (int i = 0; i < this.palmIcons.gameObject.transform.childCount; i++)
-            {
-                this.palmIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
-                this.palmIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
-            }
-            for (int i = 0; i < this.firstAppIcons.gameObject.transform.childCount; i++)
-            {
-                this.firstAppIcons.gameObject.transform.GetChild(i).position = this.firstHandWingUI.gameObject.transform.GetChild(i).position;
-                this.firstAppIcons.gameObject.transform.GetChild(i).rotation = this.firstHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
-            }
-            for (int i = 0; i < this.secondAppIcons.gameObject.transform.childCount; i++)
-            {
-                this.secondAppIcons.gameObject.transform.GetChild(i).position = this.secondHandWingUI.gameObject.transform.GetChild(i).position;
-                this.secondAppIcons.gameObject.transform.GetChild(i).rotation = this.secondHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
-            }
-            */
+            //for (int i = 0; i < this.palmIcons.gameObject.transform.childCount; i++)
+            //{
+            //    this.palmIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
+            //    this.palmIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+            //}
+            //for (int i = 0; i < this.firstAppIcons.gameObject.transform.childCount; i++)
+            //{
+            //    this.firstAppIcons.gameObject.transform.GetChild(i).position = this.firstHandWingUI.gameObject.transform.GetChild(i).position;
+            //    this.firstAppIcons.gameObject.transform.GetChild(i).rotation = this.firstHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+            //}
+            //for (int i = 0; i < this.secondAppIcons.gameObject.transform.childCount; i++)
+            //{
+            //    this.secondAppIcons.gameObject.transform.GetChild(i).position = this.secondHandWingUI.gameObject.transform.GetChild(i).position;
+            //    this.secondAppIcons.gameObject.transform.GetChild(i).rotation = this.secondHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+            //}
 
             //VFX
             //this.particleExplosionVFX.transform.position = this.vwUI.transform.position;

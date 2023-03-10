@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace VW
+namespace VirtualWearable
 {
     [System.Serializable]
     public class AppIconsPlayableAsset : PlayableAsset
