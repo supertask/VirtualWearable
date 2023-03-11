@@ -84,7 +84,7 @@ namespace VirtualWearable
         }
         private IEnumerator ScaleDownAppIcons()
         {
-            return ScaleAppIcons(false, Vector3.one, this.model.AppArea.SpheroidScale, scaleDownTime);
+            return ScaleAppIcons(false, this.model.AppArea.SpheroidScale, Vector3.zero, scaleDownTime);
         }
 
         private IEnumerator ScaleAppIcons(bool isScaleUp, Vector3 srcScale, Vector3 targetScale, double animationTime)

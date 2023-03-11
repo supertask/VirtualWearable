@@ -36,7 +36,7 @@ namespace VirtualWearable
 
         public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
         public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
-        public readonly Vector3 DEFAULT_OCCLUTION_SCALE = new Vector3(1, 0.15f, 1);
+        public readonly Vector3 ARM_UI_OCCLUTION_SCALE = new Vector3(0.65f, 0.15f, 0.65f);
         public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 3;
         public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" };
         #endregion
@@ -67,8 +67,8 @@ namespace VirtualWearable
             this.armRingUI = this.vwUI.transform.Find("ArmRingUI").gameObject;
             this.palmUI = this.vwUI.transform.Find("PalmUI").gameObject;
             this.thumbUI = this.vwUI.transform.Find("ThumbUI").gameObject;
-            this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
-            this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
+            //this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
+            //this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
 
             this.armGeneralIcons = this.icons.transform.Find("ArmUI_GeneralIcons").gameObject;
             this.armSystemIcons = this.icons.transform.Find("ArmUI_SystemIcons").gameObject;
@@ -93,12 +93,12 @@ namespace VirtualWearable
             this.MoveIconsIntoUI(this.armGeneralIcons, this.armUIGeneral, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
             this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
             this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0), null );
-            //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), DEFAULT_OCCLUTION_SCALE );
+            //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), ARM_UI_OCCLUTION_SCALE );
             this.MoveIconsIntoUI(this.appIconsOnRightHand, this.appArea.SpheroidCenterObj, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 0, 0), APP_SCALE_ON_FINGERS);
 
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(1, 0.15f, 2.5f) );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), ARM_UI_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), ARM_UI_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(0.7f, 0.15f, 2.5f) );
 
             this.handUtil = new HandUtil(playerHeadTransform);
             //Debug.Log("handUtil: " + handUtil);
