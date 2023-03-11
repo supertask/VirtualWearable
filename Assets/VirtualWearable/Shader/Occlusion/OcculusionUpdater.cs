@@ -8,7 +8,7 @@ public class OcculusionUpdater : MonoBehaviour
 {
     public GameObject arCameraObj;
     
-    public Material occulusionMaterial;
+    public List<Material> occlusionMaterials;
 
     private Texture2D mainTex;
     private Texture2D uvTex;
@@ -44,11 +44,12 @@ public class OcculusionUpdater : MonoBehaviour
         {
             this.mainTex = this.videoBackgroundMaterial.GetTexture("_MainTex") as Texture2D;
             //this.mainTex = this.videoBackgroundMaterial.mainTexture;
-            this.occulusionMaterial.EnableKeyword("_MAIN_LIGHT_SHADOWS");
-            this.occulusionMaterial.SetVector("_ARBackgroundTextureSize", new Vector2(this.mainTex.width, this.mainTex.height));
-            this.occulusionMaterial.SetTexture("_ARBackgroundTexture", this.mainTex);
-            
-            
+            foreach(Material occlusionMat in occlusionMaterials)
+            {
+                occlusionMat.EnableKeyword("_MAIN_LIGHT_SHADOWS");
+                occlusionMat.SetVector("_ARBackgroundTextureSize", new Vector2(this.mainTex.width, this.mainTex.height));
+                occlusionMat.SetTexture("_ARBackgroundTexture", this.mainTex);
+            }
         }
 
 
@@ -68,6 +69,9 @@ public class OcculusionUpdater : MonoBehaviour
     void OnDestory()
     {
         DestroyImmediate(videoBackgroundMaterial);
-        DestroyImmediate(occulusionMaterial);
+        foreach (Material occlusionMat in occlusionMaterials)
+        {
+            DestroyImmediate(occlusionMat);
+        }
     }
 }

@@ -20,12 +20,12 @@ namespace VirtualWearable
         public Transform playerHeadTransform;
         public GameObject appShowcaseOnStage;
         public GameObject appShowcaseOnHand;
+        [SerializeField] public AppArea.AppDisplayingMode appDisplayingMode;
 
         public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
         public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
 
-        [SerializeField] private AppArea.AppDisplayingMode appDisplayingMode;
-        [SerializeField] private AppArea appArea;
+        private AppArea appArea;
         public bool isShowGizmo = true;
         #endregion
 
@@ -79,11 +79,8 @@ namespace VirtualWearable
             this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
-            GameObject appShowcase = null;
-            if (appDisplayingMode == AppArea.AppDisplayingMode.InLineOfSight) { appShowcase = appShowcaseOnStage; }
-            else if (appDisplayingMode == AppArea.AppDisplayingMode.OnHand) { appShowcase = appShowcaseOnHand; }
-            this.appArea = new AppArea(this.appIconsOnRightHand, appShowcase, appDisplayingMode);
             //this.appArea = new AppArea(this.appIconsOnRightHand, appShowcaseOnStage, appShowcaseOnHand);
+            this.appArea = new AppArea(this.appIconsOnRightHand, appShowcaseOnStage, appShowcaseOnHand, appDisplayingMode);
 
 
             //Disable mesh
@@ -143,9 +140,13 @@ namespace VirtualWearable
         private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent,
             Vector3? localPosition, Quaternion? localRotation, Vector3? localScale)
         {
-            //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
-            for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
+            int targetChildCount = targetParent.transform.childCount;
+            for (int i = sourceParent.transform.childCount - 1; i >= 0; i--)
             {
+                if (i >= targetChildCount)
+                {
+                    continue;
+                }
                 Transform source = sourceParent.transform.GetChild(i);
                 Transform target = targetParent.transform.GetChild(i);
                 source.parent = target;

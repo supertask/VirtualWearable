@@ -249,7 +249,7 @@ Material:
     - _RefractionModel: 0
     - _RenderQueueType: 1
     - _RequireSplitLighting: 0
-    - _ShadowMatteFilter: 4.0357e-41
+    - _ShadowMatteFilter: 1.8e-43
     - _Smoothness: 0.5
     - _SmoothnessRemapMax: 1
     - _SmoothnessRemapMin: 0
