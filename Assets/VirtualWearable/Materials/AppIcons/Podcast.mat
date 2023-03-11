@@ -159,7 +159,7 @@ Material:
     - _Cutoff: 0.5
     - _CyberCircuitScale: 15
     - _CyberCircuitSeed: 0
-    - _CyberCircuitTime: 5.7599998
+    - _CyberCircuitTime: 0
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
@@ -205,7 +205,7 @@ Material:
     - _FirstEffectSecondLayerDissolveInterpolation: 0.2
     - _FirstLayerDissolveInterpolation: 0
     - _FourthEffect: 0
-    - _FresnelPower: 3.77
+    - _FresnelPower: 3.5
     - _HdrpVersion: 2
     - _HeightAmplitude: 0.02
     - _HeightCenter: 0.5

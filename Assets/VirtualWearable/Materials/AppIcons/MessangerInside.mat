@@ -149,9 +149,9 @@ Material:
     - _CullMode: 2
     - _CullModeForward: 2
     - _Cutoff: 0.5
-    - _CyberCircuitScale: 10
+    - _CyberCircuitScale: 15
     - _CyberCircuitSeed: 0
-    - _CyberCircuitTime: 5.7599998
+    - _CyberCircuitTime: 0
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
@@ -163,7 +163,7 @@ Material:
     - _DisplacementMode: 0
     - _DissolveCyberAreaWidth: 0.5
     - _DissolveEdgeWidth: 0.541
-    - _DissolveScale: 10
+    - _DissolveScale: 20
     - _DissolveThreshold: 0
     - _DoubleSidedEnable: 0
     - _DoubleSidedGIMode: 0
@@ -177,7 +177,7 @@ Material:
     - _EnableFogOnTransparent: 0
     - _EnableGeometricSpecularAA: 0
     - _EnergyConservingSpecularColor: 1
-    - _FresnelPower: 4
+    - _FresnelPower: 3.5
     - _HeightAmplitude: 0.02
     - _HeightCenter: 0.5
     - _HeightMapParametrization: 0
@@ -263,7 +263,7 @@ Material:
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _MainColor: {r: 0.254717, g: 0.254717, b: 0.254717, a: 1}
-    - _NoiseTilingAndOffset: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _NoiseTilingAndOffset: {r: 0.8, g: 0.82, b: 0.65, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _ThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _TransmittanceColor: {r: 1, g: 1, b: 1, a: 1}

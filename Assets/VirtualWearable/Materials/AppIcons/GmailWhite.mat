@@ -159,7 +159,7 @@ Material:
     - _Cutoff: 0.5
     - _CyberCircuitScale: 15
     - _CyberCircuitSeed: 0
-    - _CyberCircuitTime: 5.7599998
+    - _CyberCircuitTime: 0
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
