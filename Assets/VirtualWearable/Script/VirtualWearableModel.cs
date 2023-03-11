@@ -9,24 +9,29 @@ using static Leap.Finger;
 
 namespace VirtualWearable
 {
+    //mesh, color
+    [System.Serializable]
+    public struct AppColor
+    {
+        [SerializeField] public MeshRenderer renderer;
+        [SerializeField] public Color color;
+    }
 
     public class VirtualWearableModel : MonoBehaviour
     {
         #region Serialized fields
-        public GameObject vwUI; //Virtual Wearable UI
-        public GameObject icons;
-        public GameObject rightHand;
-        public GameObject stage;
-        public Transform playerHeadTransform;
-        public GameObject appShowcaseOnStage;
-        public GameObject appShowcaseOnHand;
+        [SerializeField] public GameObject vwUI; //Virtual Wearable UI
+        [SerializeField] public GameObject icons;
+        [SerializeField] public GameObject rightHand;
+        [SerializeField] public GameObject stage;
+        [SerializeField] public Transform playerHeadTransform;
+        [SerializeField] public GameObject appShowcaseOnStage;
+        [SerializeField] public GameObject appShowcaseOnHand;
         [SerializeField] public AppArea.AppDisplayingMode appDisplayingMode;
-
-        public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
-        public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
-
-        private AppArea appArea;
-        public bool isShowGizmo = true;
+        [SerializeField] public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
+        [SerializeField] public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
+        [SerializeField] public bool isShowGizmo = true;
+        [SerializeField] public List<AppColor> appColorMap;
         #endregion
 
         #region public
@@ -48,11 +53,13 @@ namespace VirtualWearable
         private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
         private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
         private HandUtil handUtil;
+        private AppArea appArea;
 
         private bool isVisibleVirtualWearable;
 
         private float appCyberCircuitTimeSpeed = 0.5f;
         private float cyberCircuitTimeSpeed = 0.1f;
+        private MaterialPropertyBlock appMatBlock;
 
         #endregion
 
@@ -79,9 +86,13 @@ namespace VirtualWearable
             this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
-            //this.appArea = new AppArea(this.appIconsOnRightHand, appShowcaseOnStage, appShowcaseOnHand);
             this.appArea = new AppArea(this.appIconsOnRightHand, appShowcaseOnStage, appShowcaseOnHand, appDisplayingMode);
-
+            this.appMatBlock = new MaterialPropertyBlock();
+            foreach (AppColor appColor in appColorMap)
+            {
+                appMatBlock.SetColor("_MainColor", appColor.color);
+                appColor.renderer.SetPropertyBlock(appMatBlock);
+            }
 
             //Disable mesh
             Util.EnableMeshRendererRecursively(this.firstAppIcons, false);
@@ -116,10 +127,14 @@ namespace VirtualWearable
         private void FixedUpdate()
         {
             float cyberCircuitTime = Time.time * appCyberCircuitTimeSpeed;
-            foreach (MeshRenderer renderer in this.appArea.AppIconRenderers)
+
+            foreach (AppColor appColor in appColorMap)
             {
-                renderer.sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+                appMatBlock.SetColor("_MainColor", appColor.color);
+                appMatBlock.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+                appColor.renderer.SetPropertyBlock(appMatBlock);
             }
+
             cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
             this.palmUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
             this.armUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
