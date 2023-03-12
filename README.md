@@ -18,7 +18,7 @@ Here is one of my prototypes of Virtual Wearable. I am still deeply thinking wha
 ## How to run
 
 - Install middlewares I wrote in Requiredments.
-- Download [AR maker](PtcMaker20cm_scaled.jpg) and print it as 20cm wide.
+- Download [AR maker](./doc/images/PtcMaker20cm_scaled.jpg) and print it as 20cm wide.
 - Run Unity!
 
 
