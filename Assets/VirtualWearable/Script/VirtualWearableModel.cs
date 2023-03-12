@@ -24,6 +24,7 @@ namespace VirtualWearable
         [SerializeField] public GameObject icons;
         [SerializeField] public GameObject rightHand;
         [SerializeField] public GameObject stage;
+        [SerializeField] public GameObject leapServiceProviderObj;
         [SerializeField] public Transform playerHeadTransform;
         [SerializeField] public GameObject appShowcaseOnStage;
         [SerializeField] public GameObject appShowcaseOnHand;
@@ -32,6 +33,10 @@ namespace VirtualWearable
         [SerializeField] public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
         [SerializeField] public bool isShowGizmo = true;
         [SerializeField] public List<AppColor> appColorMap;
+        [Range(-0.2f, 0.2f), SerializeField] public float leapServiceProviderPositionX;
+        [Range(-0.2f, 0.2f), SerializeField] public float leapServiceProviderPositionY;
+        [Range(-0.2f, 0.2f), SerializeField] public float leapServiceProviderPositionZ = -0.11f;
+
         #endregion
 
         #region public
@@ -228,6 +233,10 @@ namespace VirtualWearable
             appArea.UpdateTransform(palmPosition, palmQuaternion);
 
 
+            leapServiceProviderObj.transform.localPosition = new Vector3(
+                leapServiceProviderPositionX,
+                leapServiceProviderPositionY,
+                leapServiceProviderPositionZ);
 
             // Icons
             //for (int i = 0; i < this.palmIcons.gameObject.transform.childCount; i++)

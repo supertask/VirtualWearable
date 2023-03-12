@@ -85,7 +85,7 @@ namespace VirtualWearable
                 this.app = new App() { scale = Vector3.one * 1.0f };
                 this.appAreaLayers = new AppAreaLayer[1]
                 {
-                    new AppAreaLayer() { partitionedNum = 5, displayingAngle = 120f, phi = Mathf.PI * 0.7f }
+                    new AppAreaLayer() { partitionedNum = 5, displayingAngle = 120f, phi = Mathf.PI * 0.57f }
                 };
             }
             this.SetAppPointsIn(spheroidCenterObj);
