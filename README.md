@@ -2,9 +2,9 @@
 
 Here is one of my prototypes of Virtual Wearable. I am still deeply thinking what kind UI or OS people want and I want when people had AR glass. Let me know what UI or OS you guys want in the near future on the issue tab or to [my Twitter](https://twitter.com/supertask_jp).
 
-![Virtual Wearable](./doc/images/VirtualWearable3.gif)
-
 [YouTube](https://www.youtube.com/watch?v=xHunXGHA9lE)
+
+![Virtual Wearable](./doc/images/VirtualWearable3.gif)
 
 ## Requirements
 
