@@ -520,10 +520,10 @@
     "m_Guid": {
         "m_GuidSerialized": "ed466311-c0f6-42db-b1bd-1367ec75b263"
     },
-    "m_Name": "Time",
+    "m_Name": "CyberCircuitTime",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Time",
-    "m_DefaultReferenceName": "Time",
+    "m_RefNameGeneratedByDisplayName": "CyberCircuitTime",
+    "m_DefaultReferenceName": "_CyberCircuitTime",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -568,10 +568,10 @@
     "m_Guid": {
         "m_GuidSerialized": "2457cbbd-3503-4ca1-994f-c2f03f5f4533"
     },
-    "m_Name": "VoronoiWeight",
+    "m_Name": "CyberCircuidSeed",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "VoronoiWeight",
-    "m_DefaultReferenceName": "VoronoiWeight",
+    "m_RefNameGeneratedByDisplayName": "CyberCircuidSeed",
+    "m_DefaultReferenceName": "_CyberCircuidSeed",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -766,7 +766,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "16fc3b357ebf477a807a33125a5f90df",
     "m_Id": 0,
-    "m_DisplayName": "Time",
+    "m_DisplayName": "CyberCircuitTime",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -1984,7 +1984,7 @@
     "m_Name": "Randomness",
     "m_DefaultRefNameVersion": 1,
     "m_RefNameGeneratedByDisplayName": "Randomness",
-    "m_DefaultReferenceName": "Randomness",
+    "m_DefaultReferenceName": "_Randomness",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -1993,7 +1993,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 1.0,
+    "m_Value": 2.5,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -2276,7 +2276,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "a8c0891064db47d3a0bf2c24ffaf850f",
     "m_Id": 0,
-    "m_DisplayName": "VoronoiWeight",
+    "m_DisplayName": "CyberCircuidSeed",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -2746,10 +2746,10 @@
             "m_Id": "8936dc0cabec49f1905f22f999e79c3b"
         },
         {
-            "m_Id": "06807c6d4d92492e80764b088448721e"
+            "m_Id": "044fe0bfdb444056b9c56c55db669c50"
         },
         {
-            "m_Id": "044fe0bfdb444056b9c56c55db669c50"
+            "m_Id": "06807c6d4d92492e80764b088448721e"
         },
         {
             "m_Id": "4d324ca26a6b4ae7ac7a472eba769be5"

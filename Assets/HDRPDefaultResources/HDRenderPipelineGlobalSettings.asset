@@ -86,7 +86,7 @@ MonoBehaviour:
     PublicKeyToken=null
   beforeTAACustomPostProcesses: []
   lightLayerName0: Light Layer default
-  lightLayerName1: Light Layer 1
+  lightLayerName1: Light Layer for no shadow
   lightLayerName2: Light Layer 2
   lightLayerName3: Light Layer 3
   lightLayerName4: Light Layer 4

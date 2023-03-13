@@ -7,80 +7,66 @@ using Leap;
 using Leap.Unity;
 using static Leap.Finger;
 
-namespace VW
+namespace VirtualWearable
 {
-    public class Ellipsoid
+    //mesh, color
+    [System.Serializable]
+    public struct AppColor
     {
-        public Vector3 center;
-        public Vector3 radius;
-        public float angle; //0 to 360 degree
-        public float partitionedNum;
-
-        public Ellipsoid(Vector3 center, Vector3 radius, float angle, int partitionedNum)
-        {
-            this.center = center;
-            this.radius = radius;
-            this.angle = angle;
-            this.partitionedNum = partitionedNum;
-        }
-
-        //partitionedNum: 分割数
-        public Vector3 PositionOnSphere(int index, float height)
-        {
-            // 角度を計算する
-            float partitionedAngle = angle / partitionedNum;
-            float offsetAngle = 90f - angle / 2f;
-            float radian = (offsetAngle + index * partitionedAngle) * Mathf.Deg2Rad;
-
-            // 楕円球上の点を計算する
-            Vector3 point = new Vector3(
-                center.x + radius.x * Mathf.Cos(radian),
-                center.y + radius.y * Mathf.Sin(radian),
-                center.z + height
-            );
-            return point;
-        }
+        [SerializeField] public MeshRenderer renderer;
+        [SerializeField] public Color color;
     }
 
-    public class VirtualWearableModel: MonoBehaviour
+    public class VirtualWearableModel : MonoBehaviour
     {
-        public GameObject vwUI; //Virtual Wearable UI
-        public GameObject icons;
-        public GameObject rightHand;
-        public bool isShowGizmo = true;
+        #region Serialized fields
+        [SerializeField] public GameObject vwUI; //Virtual Wearable UI
+        [SerializeField] public GameObject icons;
+        [SerializeField] public GameObject rightHand;
+        [SerializeField] public GameObject stage;
+        [SerializeField] public GameObject leapServiceProviderObj;
+        [SerializeField] public Transform playerHeadTransform;
+        [SerializeField] public GameObject appShowcaseOnStage;
+        [SerializeField] public GameObject appShowcaseOnHand;
+        [SerializeField] public AppArea.AppDisplayingMode appDisplayingMode;
+        [SerializeField] public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
+        [SerializeField] public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
+        [SerializeField] public bool isShowGizmo = true;
+        [SerializeField] public List<AppColor> appColorMap;
+        [Range(-0.2f, 0.2f), SerializeField] public float leapServiceProviderPositionX;
+        [Range(-0.2f, 0.2f), SerializeField] public float leapServiceProviderPositionY;
+        [Range(-0.2f, 0.2f), SerializeField] public float leapServiceProviderPositionZ = -0.11f;
 
-        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI;
+        #endregion
+
+        #region public
+        public HandUtil handUtilAccess { get { return handUtil; } }
+        public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
+        public AppArea AppArea { get { return appArea; } }
+
+        public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
+        public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
+        public readonly Vector3 ARM_UI_OCCLUTION_SCALE = new Vector3(0.65f, 0.15f, 0.65f);
+        public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 3;
+        public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" };
+        #endregion
+
+
+        #region private
+        private GameObject arm, armUI, armUIGeneral, armUISystem, armUIClock, armRingUI, thumbUI;
         private GameObject palmUI, firstHandWingUI, secondHandWingUI;
         private GameObject armGeneralIcons, armSystemIcons, armClockIcons, armClock;
         private GameObject palmIcons, firstAppIcons, secondAppIcons, appIconsOnRightHand, iconOcclusions;
-        private GameObject[] rightFingers;
         private HandUtil handUtil;
-
-        public float HAND_AJUST__TOWARDS_FINGER = -0.058f;
-        public float HAND_AJUST__TOWARDS_THUMB = 0.0045f;
-        public const float ARM_WIDTH_METER_IN_BLENDER = 6.35024f * 0.01f; // = 6.35024cm
-        public const float ARM_LENGTH_METER_IN_BLENDER = 25.6461f * 0.01f; // = 25.6461cm
-        public readonly Vector3 DEFAULT_OCCLUTION_SCALE = new Vector3(1, 0.15f, 1);
-        public readonly Vector3 APP_SCALE_ON_FINGERS = Vector3.one * 3;
-        public readonly string[] fingerNames = new string[5] { "L_index_end", "L_middle_end", "L_pinky_end", "L_ring_end", "L_thumb_end" }; 
-
-        public Transform playerHeadTransform;
-        public HandUtil handUtilAccess {
-            get { return handUtil; }
-        }
-        public GameObject PalmLookAtCenter
-        {
-            get { return palmLookAtCenter; }
-        }
+        private AppArea appArea;
 
         private bool isVisibleVirtualWearable;
-        public bool IsVisibleVirtualWearable { get { return isVisibleVirtualWearable; } }
-        private GameObject palmCenter;
-        private GameObject palmLookAtCenter;
-        private Ellipsoid ellipsoid;
-        private List<MeshRenderer> appIconRenderers;
-        //private float cyberCircuitTimeSpeed = 0.075f;
-        private float cyberCircuitTimeSpeed = 0.5f;
+
+        private float appCyberCircuitTimeSpeed = 0.5f;
+        private float cyberCircuitTimeSpeed = 0.1f;
+        private MaterialPropertyBlock appMatBlock;
+
+        #endregion
 
         void Awake()
         {
@@ -92,13 +78,9 @@ namespace VW
 
             this.armRingUI = this.vwUI.transform.Find("ArmRingUI").gameObject;
             this.palmUI = this.vwUI.transform.Find("PalmUI").gameObject;
-            this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
-            this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
-
-            this.rightFingers = GameObject.FindGameObjectsWithTag("RightFingers");
-            //Debug.Log("finger: " + fingers);
-            //Debug.Log("finger: " + fingers.Length);
-            //Debug.Log("finger: " + fingers[0]);
+            this.thumbUI = this.vwUI.transform.Find("ThumbUI").gameObject;
+            //this.firstHandWingUI = this.vwUI.transform.Find("FirstHandWingUI").gameObject;
+            //this.secondHandWingUI = this.vwUI.transform.Find("SecondHandWingUI").gameObject;
 
             this.armGeneralIcons = this.icons.transform.Find("ArmUI_GeneralIcons").gameObject;
             this.armSystemIcons = this.icons.transform.Find("ArmUI_SystemIcons").gameObject;
@@ -109,40 +91,17 @@ namespace VW
             this.appIconsOnRightHand = this.icons.transform.Find("AppIconsOnRightHand").gameObject;
             this.iconOcclusions = this.icons.transform.Find("IconOcclusions").gameObject;
 
-            this.palmCenter = this.vwUI.transform.parent.Find("PalmCenter").gameObject; //raw tracked palm center
-            this.palmCenter.transform.parent = this.vwUI.transform.parent;
-            this.palmLookAtCenter = new GameObject("palmLookAtCenter");
-            this.palmLookAtCenter.transform.parent = this.palmCenter.transform;
-            this.palmLookAtCenter.transform.position = new Vector3(0, 0f, 0.125f);
-            //this.palmLookAtCenter.transform.localScale = Vector3.zero;
-            //this.palmLookAtCenter.SetActive(false);
-
-            appIconRenderers = new List<MeshRenderer>();
-            foreach (MeshRenderer renderer in appIconsOnRightHand.GetComponentsInChildren<MeshRenderer>())
+            this.appArea = new AppArea(this.appIconsOnRightHand, appShowcaseOnStage, appShowcaseOnHand, appDisplayingMode);
+            this.appMatBlock = new MaterialPropertyBlock();
+            foreach (AppColor appColor in appColorMap)
             {
-                this.appIconRenderers.Add(renderer);
+                appMatBlock.SetColor("_MainColor", appColor.color);
+                appColor.renderer.SetPropertyBlock(appMatBlock);
             }
-
-            float ellipsoidSize = 0.065f; //meter
-            float ellipsoidHeight = 0.065f; //meter
-            int PARTITIONED_NUM = 5; //app num
-            this.ellipsoid = new Ellipsoid(this.palmLookAtCenter.transform.position,
-                new Vector3(ellipsoidSize, ellipsoidSize, ellipsoidHeight),
-                140f, PARTITIONED_NUM);
-            for (int i = 0; i < PARTITIONED_NUM; i++)
-            {
-                var appCenter = new GameObject("appCenter" + i);
-                //TODO: Change position to sphere position later
-                appCenter.transform.position = ellipsoid.PositionOnSphere(i, -ellipsoidHeight * 0.75f);
-                appCenter.transform.LookAt(this.palmLookAtCenter.transform, Vector3.forward);
-                appCenter.transform.parent = this.palmLookAtCenter.transform;
-            }
-
 
             //Disable mesh
             Util.EnableMeshRendererRecursively(this.firstAppIcons, false);
             Util.EnableMeshRendererRecursively(this.secondAppIcons, false);
-
             //this.MoveChildren(this.firstAppIcons, this.firstHandWingUI, this.iconOcclusions);
             //this.MoveChildren(this.secondAppIcons, this.secondHandWingUI, this.iconOcclusions);
 
@@ -150,12 +109,12 @@ namespace VW
             this.MoveIconsIntoUI(this.armGeneralIcons, this.armUIGeneral, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
             this.MoveIconsIntoUI(this.armSystemIcons, this.armUISystem, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 90, 0), null );
             this.MoveIconsIntoUI(this.armClockIcons, this.armUIClock, new Vector3(0f, 0.00575f, 0f), Quaternion.Euler(90, 270, 0), null );
-            //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), DEFAULT_OCCLUTION_SCALE );
-            this.MoveIconsIntoUI(this.appIconsOnRightHand, this.palmLookAtCenter, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 0, 0), APP_SCALE_ON_FINGERS);
+            //this.MoveOcculutionsIntoUI(this.iconOcclusions, this.palmUI, new Vector3(0f, -0.0002f, 0f), ARM_UI_OCCLUTION_SCALE );
+            this.MoveIconsIntoUI(this.appIconsOnRightHand, this.appArea.SpheroidCenterObj, new Vector3(0f, 0f, 0f), Quaternion.Euler(0, 0, 0), APP_SCALE_ON_FINGERS);
 
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), DEFAULT_OCCLUTION_SCALE );
-            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(1, 0.15f, 2.5f) );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIGeneral, new Vector3(0f, -0.002f, 0f), ARM_UI_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUISystem, new Vector3(0f, -0.002f, 0f), ARM_UI_OCCLUTION_SCALE );
+            this.MoveOcculutionsIntoUI(this.iconOcclusions, this.armUIClock, new Vector3(0f, 0f, 0f), new Vector3(0.7f, 0.15f, 2.5f) );
 
             this.handUtil = new HandUtil(playerHeadTransform);
             //Debug.Log("handUtil: " + handUtil);
@@ -165,38 +124,49 @@ namespace VW
 
         private void Start()
         {
-            this.palmLookAtCenter.transform.localScale = Vector3.zero;
-            this.palmLookAtCenter.SetActive(false);
+            this.appArea.SpheroidCenterObj.transform.localScale = Vector3.zero;
+            this.appArea.SpheroidCenterObj.SetActive(false);
         }
 
 
         private void FixedUpdate()
         {
-            float cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
-            foreach (MeshRenderer renderer in appIconRenderers)
+            float cyberCircuitTime = Time.time * appCyberCircuitTimeSpeed;
+
+            foreach (AppColor appColor in appColorMap)
             {
-                renderer.sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
-                //renderer.sharedMaterial.SetFloat("_CyberCircuitSeed", cyberCircuitTime);
+                appMatBlock.SetColor("_MainColor", appColor.color);
+                appMatBlock.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+                appColor.renderer.SetPropertyBlock(appMatBlock);
             }
+
+            cyberCircuitTime = Time.time * cyberCircuitTimeSpeed;
+            this.palmUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+            this.armUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
+            this.thumbUI.GetComponent<MeshRenderer>().sharedMaterial.SetFloat("_CyberCircuitTime", cyberCircuitTime);
         }
 
         private void OnDrawGizmos()
         {
             if (!isShowGizmo) return;
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.x);
+            Gizmos.DrawWireSphere(this.appArea.SpheroidCenterObj.transform.position, this.appArea.SpheroidData.radius.x);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(this.palmLookAtCenter.transform.position, this.ellipsoid.radius.z);
+            Gizmos.DrawWireSphere(this.appArea.SpheroidCenterObj.transform.position, this.appArea.SpheroidData.radius.z);
             Gizmos.color = Color.white;
-            Gizmos.DrawWireCube(this.palmLookAtCenter.transform.position, 0.03f * Vector3.one);
+            Gizmos.DrawWireCube(this.appArea.SpheroidCenterObj.transform.position, 0.03f * Vector3.one);
         }
 
         private void MoveIconsIntoUI(GameObject sourceParent, GameObject targetParent,
             Vector3? localPosition, Quaternion? localRotation, Vector3? localScale)
         {
-            //Debug.Log("num of children: " + sourceParent.gameObject.transform.childCount);
-            for (int i = sourceParent.gameObject.transform.childCount - 1; i >= 0; i--)
+            int targetChildCount = targetParent.transform.childCount;
+            for (int i = sourceParent.transform.childCount - 1; i >= 0; i--)
             {
+                if (i >= targetChildCount)
+                {
+                    continue;
+                }
                 Transform source = sourceParent.transform.GetChild(i);
                 Transform target = targetParent.transform.GetChild(i);
                 source.parent = target;
@@ -259,30 +229,31 @@ namespace VW
                 hand.Arm.Width / ARM_WIDTH_METER_IN_BLENDER,
                 hand.Arm.Length / ARM_LENGTH_METER_IN_BLENDER,
                 1);
-            //Debug.Log("width: " + hand.Arm.Width);
-            //Debug.Log("length: " + hand.Arm.Length);
 
-            this.palmCenter.transform.position = palmPosition;
-            this.palmCenter.transform.rotation = palmQuaternion * Quaternion.AngleAxis(270, Vector3.left);
+            appArea.UpdateTransform(palmPosition, palmQuaternion);
 
-            /*
+
+            leapServiceProviderObj.transform.localPosition = new Vector3(
+                leapServiceProviderPositionX,
+                leapServiceProviderPositionY,
+                leapServiceProviderPositionZ);
+
             // Icons
-            for (int i = 0; i < this.palmIcons.gameObject.transform.childCount; i++)
-            {
-                this.palmIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
-                this.palmIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
-            }
-            for (int i = 0; i < this.firstAppIcons.gameObject.transform.childCount; i++)
-            {
-                this.firstAppIcons.gameObject.transform.GetChild(i).position = this.firstHandWingUI.gameObject.transform.GetChild(i).position;
-                this.firstAppIcons.gameObject.transform.GetChild(i).rotation = this.firstHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
-            }
-            for (int i = 0; i < this.secondAppIcons.gameObject.transform.childCount; i++)
-            {
-                this.secondAppIcons.gameObject.transform.GetChild(i).position = this.secondHandWingUI.gameObject.transform.GetChild(i).position;
-                this.secondAppIcons.gameObject.transform.GetChild(i).rotation = this.secondHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
-            }
-            */
+            //for (int i = 0; i < this.palmIcons.gameObject.transform.childCount; i++)
+            //{
+            //    this.palmIcons.gameObject.transform.GetChild(i).position = this.palmUI.gameObject.transform.GetChild(i).position;
+            //    this.palmIcons.gameObject.transform.GetChild(i).rotation = this.palmUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+            //}
+            //for (int i = 0; i < this.firstAppIcons.gameObject.transform.childCount; i++)
+            //{
+            //    this.firstAppIcons.gameObject.transform.GetChild(i).position = this.firstHandWingUI.gameObject.transform.GetChild(i).position;
+            //    this.firstAppIcons.gameObject.transform.GetChild(i).rotation = this.firstHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+            //}
+            //for (int i = 0; i < this.secondAppIcons.gameObject.transform.childCount; i++)
+            //{
+            //    this.secondAppIcons.gameObject.transform.GetChild(i).position = this.secondHandWingUI.gameObject.transform.GetChild(i).position;
+            //    this.secondAppIcons.gameObject.transform.GetChild(i).rotation = this.secondHandWingUI.gameObject.transform.GetChild(i).rotation * Quaternion.AngleAxis(270, Vector3.left); // * this.vwUI.transform.rotation;
+            //}
 
             //VFX
             //this.particleExplosionVFX.transform.position = this.vwUI.transform.position;

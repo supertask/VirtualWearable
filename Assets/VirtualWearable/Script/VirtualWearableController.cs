@@ -8,7 +8,7 @@ using Leap;
 using Leap.Unity;
 using static Leap.Finger;
 
-namespace VW
+namespace VirtualWearable
 {
     public class VirtualWearableController : MonoBehaviour
     {
@@ -80,11 +80,11 @@ namespace VW
 
         private IEnumerator ScaleUpAppIcons()
         {
-            return ScaleAppIcons(true, Vector3.zero, Vector3.one, scaleUpTime);
+            return ScaleAppIcons(true, Vector3.zero, this.model.AppArea.SpheroidScale, scaleUpTime);
         }
         private IEnumerator ScaleDownAppIcons()
         {
-            return ScaleAppIcons(false, Vector3.one, Vector3.zero, scaleDownTime);
+            return ScaleAppIcons(false, this.model.AppArea.SpheroidScale, Vector3.zero, scaleDownTime);
         }
 
         private IEnumerator ScaleAppIcons(bool isScaleUp, Vector3 srcScale, Vector3 targetScale, double animationTime)
@@ -92,15 +92,15 @@ namespace VW
 
             return AnimThread(
                 () => {
-                    this.model.PalmLookAtCenter.SetActive(true);
-                    this.model.PalmLookAtCenter.transform.localScale = srcScale;
+                    this.model.AppArea.SpheroidCenterObj.SetActive(true);
+                    this.model.AppArea.SpheroidCenterObj.transform.localScale = srcScale;
                 },
                 (double progress) => {
-                    this.model.PalmLookAtCenter.transform.localScale = Vector3.Lerp(srcScale, targetScale, (float)progress);
+                    this.model.AppArea.SpheroidCenterObj.transform.localScale = Vector3.Lerp(srcScale, targetScale, (float)progress);
                 },
                 () => {
-                    this.model.PalmLookAtCenter.transform.localScale = targetScale;
-                    this.model.PalmLookAtCenter.SetActive(isScaleUp ? true : false);
+                    this.model.AppArea.SpheroidCenterObj.transform.localScale = targetScale;
+                    this.model.AppArea.SpheroidCenterObj.SetActive(isScaleUp ? true : false);
                 },
                 animationTime
             );

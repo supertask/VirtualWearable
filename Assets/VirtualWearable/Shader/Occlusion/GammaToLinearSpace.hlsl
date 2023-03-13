@@ -10,13 +10,13 @@ inline float GammaToLinearSpaceExact (float value)
         return pow(value, 2.2F);
 }
 
-inline half3 GammaToLinearSpace (half3 sRGB)
+inline float3 GammaToLinearSpace (float3 sRGB)
 {
     // Approximate version from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
     return sRGB * (sRGB * (sRGB * 0.305306011h + 0.682171111h) + 0.012522878h);
 
     // Precise version, useful for debugging.
-    //return half3(GammaToLinearSpaceExact(sRGB.r), GammaToLinearSpaceExact(sRGB.g), GammaToLinearSpaceExact(sRGB.b));
+    //return float3(GammaToLinearSpaceExact(sRGB.r), GammaToLinearSpaceExact(sRGB.g), GammaToLinearSpaceExact(sRGB.b));
 }
 
 
@@ -32,14 +32,14 @@ inline float LinearToGammaSpaceExact (float value)
         return pow(value, 0.45454545F);
 }
 
-inline half3 LinearToGammaSpace (half3 linRGB)
+inline float3 LinearToGammaSpace (float3 linRGB)
 {
-    linRGB = max(linRGB, half3(0.h, 0.h, 0.h));
+    linRGB = max(linRGB, float3(0.h, 0.h, 0.h));
     // An almost-perfect approximation from http://chilliant.blogspot.com.au/2012/08/srgb-approximations-for-hlsl.html?m=1
     return max(1.055h * pow(linRGB, 0.416666667h) - 0.055h, 0.h);
 
     // Exact version, useful for debugging.
-    //return half3(LinearToGammaSpaceExact(linRGB.r), LinearToGammaSpaceExact(linRGB.g), LinearToGammaSpaceExact(linRGB.b));
+    //return float3(LinearToGammaSpaceExact(linRGB.r), LinearToGammaSpaceExact(linRGB.g), LinearToGammaSpaceExact(linRGB.b));
 }
 
 
@@ -49,7 +49,7 @@ void GammaToLinearSpaceExactShaderGraph_float(float value, out float res)
 	res = GammaToLinearSpaceExact(value);
 }
 
-void GammaToLinearSpaceShaderGraph_float(half3 sRGB, out half3 res)
+void GammaToLinearSpaceShaderGraph_float(float3 sRGB, out float3 res)
 {
 	res = GammaToLinearSpace(sRGB);
 }
@@ -59,7 +59,7 @@ void LinearToGammaSpaceExactShaderGraph_float(float value, out float res)
 	res = LinearToGammaSpaceExact(value);
 }
 
-void LinearToGammaSpaceShaderGraph_float(half3 linRGB, out half3 res)
+void LinearToGammaSpaceShaderGraph_float(float3 linRGB, out float3 res)
 {
 	res = LinearToGammaSpace(linRGB);
 }

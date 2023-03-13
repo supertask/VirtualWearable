@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
-namespace VW
+namespace VirtualWearable
 {
     [RequireComponent(typeof(PlayableDirector))]
     public class VWTimelineManager : MonoBehaviour
