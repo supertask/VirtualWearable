@@ -4,6 +4,7 @@ Here is one of my prototypes of Virtual Wearable. I am still deeply thinking wha
 
 ![Virtual Wearable](./doc/images/VirtualWearable3.gif)
 
+[YouTube](https://www.youtube.com/watch?v=xHunXGHA9lE)
 
 ## Requirements
 
