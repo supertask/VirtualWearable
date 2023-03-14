@@ -1,10 +1,10 @@
 # Virtual Wearable
 
-Here is one of my prototypes of Virtual Wearable.
-Until we have very accurate BMI, we need user interface in XR. However, existing AR/VR's UI designs are often influenced by rectangular displays, which are not cool to me, so I made them in a sci-fi style and made them open source.
+Here is one of my virtual wearable prototypes.
+Until we have a very accurate BMI, we need a user interface in XR. However, existing AR/VR UI designs are often influenced by rectangular displays, which are not cool to me, so I made them in a sci-fi style and made them open source.
 
-Next step is creating generative AI agent that generates 3d scenes with Unity engine and publish as SDK as OSS. I wanna learn about ML now. Let me know any ideas! 
-And plus, let me know what UI or OS you guys want in the near future on the issue tab or to [my Twitter](https://twitter.com/supertask_jp).
+The next step is to create a generative AI agent that generates 3D scenes using the Unity engine and release it as an SDK as OSS. Now I want to learn about ML. Let me know if you have any ideas! 
+Also, let me know what UI or OS you would like to see in the near future on the Issues tab or on [my Twitter](https://twitter.com/supertask_jp).
 
 [YouTube](https://www.youtube.com/watch?v=xHunXGHA9lE)
 
